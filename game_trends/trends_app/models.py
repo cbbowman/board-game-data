@@ -11,10 +11,10 @@ class Game(models.Model):
 	growth_rank = models.PositiveSmallIntegerField
 
 class MonthlyPlay(models.Model):
-	game = models.ManyToManyField(Game, on_delete=models.CASCADE, related_name='monthly_play')
+	game = models.ManyToManyField(Game, related_name='monthly_play')
 	year = models.PositiveSmallIntegerField
 	month = models.PositiveSmallIntegerField
 	plays = models.PositiveSmallIntegerField
 
 class FavoriteGame():
-	game = models.ManyToManyField(User, on_delete=models.CASCADE, related_name='favorites')
+	game = models.ManyToManyField(User, related_name='favorites')
