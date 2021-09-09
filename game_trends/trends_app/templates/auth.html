@@ -3,13 +3,73 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 	{% load static %}
 	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 	<title>Board Game Trends</title>
 </head>
+
 <body>
-	<h1>Login and Registration</h1>
+	<div class="container">
+		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<a class="navbar-brand" href="/">Board Game Trends</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse navbar-nav" id="navbarNav">
+				<a class="nav-item nav-link" href="/plays">Played</a>
+				<a class="nav-item nav-link" href="/growth">Growing</a>
+			</div>
+		</nav>
+		<div class="row">
+			<div class="col-md-4">
+				<h2>Login</h2>
+				<div>
+					<form action="/login" method="POST">
+						{% csrf_token %}
+						<div class="form-group">
+							<label for="username">Username</label>
+							<input type="text" name="username">
+						</div>
+						<div class="form-group">
+							<label for="password">Password</label>
+							<input type="password" name="password">
+						</div>
+						<button type="submit" class="btn btn-primary">Login</button>
+					</form>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<h2>Register</h2>
+				<div>
+					<form action="/register" method="POST">
+						{% csrf_token %}
+						<div class="form-group">
+							<label for="username">Username</label>
+							<input type="text" name="username">
+						</div>
+						<div class="form-group">
+							<label for="password">Password</label>
+							<input type="password" name="password">
+						</div>
+						<div class="form-group">
+							<label for="pass_confirm">Confirm PW</label>
+							<input type="password" name="pass_confirm">
+						</div>
+						<button type="submit" class="btn btn-primary">Register</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			{% if messages %}
+			<ul class="messages">
+				{% for message in messages %}
+					<li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+		</div>
+	</div>
 </body>
 </html>
