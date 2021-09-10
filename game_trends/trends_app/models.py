@@ -4,17 +4,7 @@ from django.db.models.fields.related import ForeignKey
 from django.contrib.auth.models import User, UserManager
 from random import randrange, seed, uniform
 from random import randint
-
-# Create your models here.
-
-# class GameManager(models.Manager):
-# 	def getGameData(self, url):
-# 			self.bgg_id = randint(10000, 99999)
-# 			self.name = "Game "+ str(randint(10000, 99999))
-# 			self.year_published = randint(1900, 2000)
-# 			self.play_rank = randint(10, 99)
-# 			self.growth_rank = randint(10, 99)
-# 			self.growth = uniform(-0.5,0.5)
+import requests
 
 class Game(models.Model):
 	bgg_id = models.PositiveIntegerField(default=0)

@@ -1,5 +1,4 @@
 from hashlib import new
-from random import randint, randrange
 from typing import ContextManager
 from django.shortcuts import redirect, render, HttpResponse
 from .models import Game, MonthlyPlay
