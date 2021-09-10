@@ -47,35 +47,83 @@
 			<div class="col-md-6">
 				<h2><a href="/plays">Most Played Games</a></h2>
 				<table class="table">
-					<tr>
-						<th>Rank</th>
-						<th>Game</th>
-						<th>Monthly Plays</th>
-					</tr>
-					{% for game in all_games %}
-					<tr>
-						<td>{{game.play_rank}}</td>
-						<td>{{game.name}}</td>
-						<td>{{game.plays}}</td>
-					</tr>
-					{% endfor %}
+					<thead>
+						<tr>
+							<th>Rank</th>
+							<th>Game</th>
+							<th>Plays</th>
+							{% if request.user.is_authenticated %}
+							<th>Favorite</th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody>
+						{% for game in play_list %}
+						<tr>
+							<td>{{game.play_rank}}</td>
+							<td>{{game.name}}</td>
+							<td>{{game.plays}}</td>
+							{% if request.user.is_authenticated %}
+							{% if game in user_favs %}
+							<td><form action="/unfav/{{game.id}}" method="POST" class="row">
+								{% csrf_token %}
+								<div class="col-sm-1">
+									<button type="submit" class="btn btn-danger">Remove</button>
+								</div>
+							</form></td>
+							{% else %}
+							<td><form action="/fav/{{game.id}}" method="POST" class="row">
+								{% csrf_token %}
+								<div class="col-sm-1">
+									<button type="submit" class="btn btn-primary">Like</button>
+								</div>
+							</form></td>
+							{% endif %}
+							{% endif %}
+						</tr>
+						{% endfor %}
+					</tbody>
 				</table>
 			</div>
 			<div class="col-md-6">
 				<h2><a href="/growth">Fastest Growing Games</a></h2>
 				<table class="table">
-					<tr>
-						<th>Rank</th>
-						<th>Game</th>
-						<th>Growth Rate</th>
-						{% for game in all_games %}
+					<thead>
+						<tr>
+							<th>Rank</th>
+							<th>Game</th>
+							<th>Growth Rate</th>
+							{% if request.user.is_authenticated %}
+							<th>Favorite</th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody>
+						{% for game in growth_list %}
 						<tr>
 							<td>{{game.growth_rank}}</td>
 							<td>{{game.name}}</td>
 							<td>{{game.growth}}</td>
+							{% if request.user.is_authenticated %}
+							{% if game in user_favs %}
+							<td><form action="/unfav/{{game.id}}" method="POST" class="row">
+								{% csrf_token %}
+								<div class="col-sm-1">
+									<button type="submit" class="btn btn-danger">Remove</button>
+								</div>
+							</form></td>
+							{% else %}
+							<td><form action="/fav/{{game.id}}" method="POST" class="row">
+								{% csrf_token %}
+								<div class="col-sm-1">
+									<button type="submit" class="btn btn-primary">Like</button>
+								</div>
+							</form></td>
+							{% endif %}
+							{% endif %}
 						</tr>
 						{% endfor %}
-					</tr>
+					</tbody>
 				</table>
 			</div>
 		</div>

@@ -7,6 +7,15 @@ from random import randint
 
 # Create your models here.
 
+# class GameManager(models.Manager):
+# 	def getGameData(self, url):
+# 			self.bgg_id = randint(10000, 99999)
+# 			self.name = "Game "+ str(randint(10000, 99999))
+# 			self.year_published = randint(1900, 2000)
+# 			self.play_rank = randint(10, 99)
+# 			self.growth_rank = randint(10, 99)
+# 			self.growth = uniform(-0.5,0.5)
+
 class Game(models.Model):
 	bgg_id = models.PositiveIntegerField(default=0)
 	name = models.CharField(max_length=255, default='Game 0')
@@ -15,6 +24,8 @@ class Game(models.Model):
 	play_rank = models.PositiveSmallIntegerField(default=0)
 	growth_rank = models.PositiveSmallIntegerField(default=0)
 	growth = models.FloatField(default=0)
+	fav_users = models.ManyToManyField(User, related_name='fav_games')
+	# objects = GameManager()
 	
 	# def getGameData(self, url):
 	# 	self.bgg_id = randint(10000, 99999)
@@ -34,6 +45,3 @@ class MonthlyPlay(models.Model):
 	# 	self.year = year
 	# 	self.month = month
 	# 	self.plays = randint(10, 10000)
-
-class FavoriteGame(models.Model):
-	game = models.ManyToManyField(User, related_name='favorites')
