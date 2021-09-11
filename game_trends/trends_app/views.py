@@ -8,6 +8,7 @@ from django.contrib import messages
 from random import randrange, seed, uniform
 from random import randint
 from django.contrib.sessions.models import Session
+from .models import getIDfromURL
 
 def index(request):
 	all_games = Game.objects.all()
@@ -127,12 +128,14 @@ def growth(request):
 	return render(request, 'growth.html', context)
 	
 def add(request):
+	url = request.POST('url')
+	game_id = getIDfromURL(url)
+	# new_game = Game.objects.create()
+
 	new_game = Game.objects.create(bgg_id = randint(10000, 99999), name = "Game "+ str(randint(10000, 99999)), year_published = randint(1900, 2000), plays = randrange(1, 5000), play_rank = randint(10, 99), growth_rank = randint(10, 99), growth = round(uniform(-0.5,0.5),2))
 	# new_game.getGame(request.POST['url'])
 	
 	# new_game = Game.objects.create()
-
-	# Game.objects.getGameData(newgame.id, url)
 	
 	years = 5
 	for this_year in range(2020-years, 2020):

@@ -5,6 +5,19 @@ from django.contrib.auth.models import User, UserManager
 from random import randrange, seed, uniform
 from random import randint
 import requests
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import unquote, urlparse
+from pathlib import PurePosixPath
+import os.path
+
+def getIDfromURL(url):
+	id = PurePosixPath(
+		unquote(
+			urlparse(url).path
+		)
+	).parts[2]
+	return id
 
 class Game(models.Model):
 	bgg_id = models.PositiveIntegerField(default=0)
@@ -15,15 +28,16 @@ class Game(models.Model):
 	growth_rank = models.PositiveSmallIntegerField(default=0)
 	growth = models.FloatField(default=0)
 	fav_users = models.ManyToManyField(User, related_name='fav_games')
-	# objects = GameManager()
 	
-	# def getGameData(self, url):
-	# 	self.bgg_id = randint(10000, 99999)
-	# 	self.name = "Game "+ str(randint(10000, 99999))
-	# 	self.year_published = randint(1900, 2000)
-	# 	self.play_rank = randint(10, 99)
-	# 	self.growth_rank = randint(10, 99)
-	# 	self.growth = uniform(-0.5,0.5)
+	def getGameData(self, url):
+		self.bgg_id = randint(10000, 99999)
+		# self.name = "Game "+ str(randint(10000, 99999))
+		self.name = "Tony Game "+ str(randint(10000, 99999))
+		self.year_published = randint(1900, 2000)
+		# self.play_rank = randint(10, 99)
+		self.play_rank = 1
+		self.growth_rank = randint(10, 99)
+		self.growth = uniform(-0.5,0.5)
 
 class MonthlyPlay(models.Model):
 	game = models.ForeignKey(Game, related_name='monthly_play', on_delete=CASCADE)
