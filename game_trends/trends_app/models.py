@@ -19,6 +19,18 @@ def getIDfromURL(url):
 	).parts[2]
 	return id
 
+def getXMLURLfromGameID(gameid):
+	url = "https://boardgamegeek.com//xmlapi2/thing?id="+str(gameid)
+	return url
+
+def getDataFromXML(url):
+	page = requests.get(url)
+	soup = BeautifulSoup(page.content, 'lxml')
+	name = soup.find('name')
+	title = name['value']
+	year = int(soup.find('yearpublished')['value'])
+	return title, year
+
 class Game(models.Model):
 	bgg_id = models.PositiveIntegerField(default=0)
 	name = models.CharField(max_length=255, default='Game 0')

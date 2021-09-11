@@ -41,7 +41,7 @@ for i in range(1,len(rows)-1):
 	data.append([cells[0].get_text(strip=True), cells[2].get_text(strip=True)])
 	# print(rows[i])
 
-# print(data)
+print(data)
 
 # tds = soup.find_all('td')[1:5]
 # for i in enumerate(tds, 1):

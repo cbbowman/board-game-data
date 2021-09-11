@@ -1,7 +1,7 @@
 from hashlib import new
 from typing import ContextManager
 from django.shortcuts import redirect, render, HttpResponse
-from .models import Game, MonthlyPlay
+from .models import Game, MonthlyPlay, getXMLURLfromGameID, getDataFromXML
 from django.contrib.auth.models import User, UserManager
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -128,14 +128,13 @@ def growth(request):
 	return render(request, 'growth.html', context)
 	
 def add(request):
-	url = request.POST('url')
-	game_id = getIDfromURL(url)
-	# new_game = Game.objects.create()
+	url = request.POST['url']
+	game_id = int(getIDfromURL(url))
+	xml_link = getXMLURLfromGameID(game_id)
+	game_name, year = getDataFromXML(xml_link)
+	new_game = Game.objects.create(bgg_id = game_id, name = game_name, year_published = year, plays = randrange(1, 5000), play_rank = randint(10, 99), growth_rank = randint(10, 99), growth = round(uniform(-0.5,0.5),2))
 
-	new_game = Game.objects.create(bgg_id = randint(10000, 99999), name = "Game "+ str(randint(10000, 99999)), year_published = randint(1900, 2000), plays = randrange(1, 5000), play_rank = randint(10, 99), growth_rank = randint(10, 99), growth = round(uniform(-0.5,0.5),2))
-	# new_game.getGame(request.POST['url'])
-	
-	# new_game = Game.objects.create()
+	# new_game = Game.objects.create(bgg_id = randint(10000, 99999), name = "Game "+ str(randint(10000, 99999)), year_published = randint(1900, 2000), plays = randrange(1, 5000), play_rank = randint(10, 99), growth_rank = randint(10, 99), growth = round(uniform(-0.5,0.5),2))
 	
 	years = 5
 	for this_year in range(2020-years, 2020):
