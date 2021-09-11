@@ -31,6 +31,22 @@ def getDataFromXML(url):
 	year = int(soup.find('yearpublished')['value'])
 	return title, year
 
+def getPlayData(game_id):
+	url =  "https://www.boardgamegeek.com/playsummary/thing/"+str(game_id)
+	page = requests.get(url)
+	soup = BeautifulSoup(page.content, 'html.parser')
+	table = soup.find_all('table')[1]
+	rows = table.find_all('tr')
+
+	data = []
+
+	for i in range(2,len(rows)-1):
+		cells = rows[i].find_all('td')
+		data.append([int(cells[0].get_text(strip=True)[:4]), int(cells[0].get_text(strip=True)[-2:]), int(cells[2].get_text(strip=True))])
+	
+	return data
+
+
 class Game(models.Model):
 	bgg_id = models.PositiveIntegerField(default=0)
 	name = models.CharField(max_length=255, default='Game 0')
@@ -41,15 +57,15 @@ class Game(models.Model):
 	growth = models.FloatField(default=0)
 	fav_users = models.ManyToManyField(User, related_name='fav_games')
 	
-	def getGameData(self, url):
-		self.bgg_id = randint(10000, 99999)
-		# self.name = "Game "+ str(randint(10000, 99999))
-		self.name = "Tony Game "+ str(randint(10000, 99999))
-		self.year_published = randint(1900, 2000)
-		# self.play_rank = randint(10, 99)
-		self.play_rank = 1
-		self.growth_rank = randint(10, 99)
-		self.growth = uniform(-0.5,0.5)
+	# def getGameData(self, url):
+	# 	self.bgg_id = randint(10000, 99999)
+	# 	# self.name = "Game "+ str(randint(10000, 99999))
+	# 	self.name = "Tony Game "+ str(randint(10000, 99999))
+	# 	self.year_published = randint(1900, 2000)
+	# 	# self.play_rank = randint(10, 99)
+	# 	self.play_rank = 1
+	# 	self.growth_rank = randint(10, 99)
+	# 	self.growth = uniform(-0.5,0.5)
 
 class MonthlyPlay(models.Model):
 	game = models.ForeignKey(Game, related_name='monthly_play', on_delete=CASCADE)

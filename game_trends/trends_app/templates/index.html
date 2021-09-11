@@ -103,7 +103,7 @@
 						<tr>
 							<td>{{game.growth_rank}}</td>
 							<td>{{game.name}}</td>
-							<td>{{game.growth}}</td>
+							<td>{{game.growth}}%</td>
 							{% if request.user.is_authenticated %}
 							{% if game in user_favs %}
 							<td><form action="/unfav/{{game.id}}" method="POST" class="row">

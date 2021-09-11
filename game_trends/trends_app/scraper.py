@@ -13,7 +13,7 @@ def getIDfromURL(url):
 	).parts[2]
 	return id
 
-print(getIDfromURL('https://www.boardgamegeek.com/boardgame/267991/conspiracy-solomon-gambit'))
+# print(getIDfromURL('https://www.boardgamegeek.com/boardgame/267991/conspiracy-solomon-gambit'))
 # url = 'https://www.boardgamegeek.com/boardgame/267991/conspiracy-solomon-gambit'
 
 # id = PurePosixPath(
@@ -38,8 +38,8 @@ rows = table.find_all('tr')
 data = []
 for i in range(1,len(rows)-1):
 	cells = rows[i].find_all('td')
-	data.append([cells[0].get_text(strip=True), cells[2].get_text(strip=True)])
-	# print(rows[i])
+	data.append([cells[0].get_text(strip=True)[:4], cells[0].get_text(strip=True)[-2:], cells[2].get_text(strip=True)])
+	# data.append([cells[0].get_text(strip=True), cells[2].get_text(strip=True)])
 
 print(data)
 
