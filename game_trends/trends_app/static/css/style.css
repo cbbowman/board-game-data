@@ -41,19 +41,8 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-/* 
-.quote {
-	background-color: blanchedalmond;
-	margin: 1em;
-	border-style: solid;
-	border-width: thin;
-	padding: 1em;
-}
 
-.post {
-	background-color: blanchedalmond;
-	margin: 1em;
-	border-style: solid;
-	border-width: thin;
-	padding: 1em;
-} */
+.thumbnail {
+	height: 50px;
+	width: auto;
+}

@@ -1,7 +1,7 @@
 from hashlib import new
 from typing import ContextManager
 from django.shortcuts import redirect, render, HttpResponse
-from .models import Game, MonthlyPlay, getXMLURLfromGameID, getDataFromXML, getPlayData
+from .models import Game, MonthlyPlay, getXMLURLfromGameID, getDataFromXML, getPlayData, addNewGame, checkTopGames
 from django.contrib.auth.models import User, UserManager
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -20,16 +20,17 @@ def index(request):
 	for rank in range(len(sorted_by_plays)):
 		game =  sorted_by_plays[rank]
 		game.play_rank = rank + 1
+		game.save()
 
 	for rank in range(len(sorted_by_growth)):
 		game =  sorted_by_growth[rank]
 		game.growth_rank = rank + 1
+		game.save()
 
 	user_favs = {}
 	if request.user.is_authenticated:
 		this_user = User.objects.filter(id = request.session['user_id'])[0]
 		user_favs = this_user.fav_games.all()
-		
 
 	context = {
 		'play_list': sorted_by_plays[:10],
@@ -81,10 +82,12 @@ def user(request, user_id):
 	for rank in range(len(sorted_by_plays)):
 		game =  sorted_by_plays[rank]
 		game.play_rank = rank + 1
+		game.save()
 
 	for rank in range(len(sorted_by_growth)):
 		game =  sorted_by_growth[rank]
 		game.growth_rank = rank + 1
+		game.save()
 
 	context = {
 		'fav_games': fav_games
@@ -97,6 +100,7 @@ def plays(request):
 	for rank in range(len(sorted_by_plays)):
 		game =  sorted_by_plays[rank]
 		game.play_rank = rank + 1
+		game.save()
 
 	user_favs = {}
 	if request.user.is_authenticated:
@@ -115,6 +119,7 @@ def growth(request):
 	for rank in range(len(sorted_by_growth)):
 		game =  sorted_by_growth[rank]
 		game.growth_rank = rank + 1
+		game.save()
 
 	user_favs = {}
 	if request.user.is_authenticated:
@@ -122,46 +127,38 @@ def growth(request):
 		user_favs = this_user.fav_games.all()
 
 	context = {
-		'growth_list': sorted_by_growth[:20],
+		'growth_list': sorted_by_growth,
 		'user_favs': user_favs
 	}
 	return render(request, 'growth.html', context)
 	
+def h(request):
+	sorted_by_h = Game.objects.order_by('-h')
+
+	for rank in range(len(sorted_by_h)):
+		game =  sorted_by_h[rank]
+		game.h_rank = rank + 1
+		game.save()
+
+	user_favs = {}
+	if request.user.is_authenticated:
+		this_user = User.objects.filter(id = request.session['user_id'])[0]
+		user_favs = this_user.fav_games.all()
+
+	context = {
+		'play_list': sorted_by_h,
+		'user_favs': user_favs
+	}
+	return render(request, 'h_index.html', context)
+	
 def add(request):
 	url = request.POST['url']
-	game_id = int(getIDfromURL(url))
-	xml_link = getXMLURLfromGameID(game_id)
-	game_name, year = getDataFromXML(xml_link)
+	addNewGame(url)
+	new_game = Game.objects.filter(bgg_id=getIDfromURL(url))[0]
+	return redirect('/fav/'+f'{new_game.id}')
 
-	if(year > 2019):
-		return redirect('/')
-
-	if(len(Game.objects.filter(bgg_id = game_id))):
-		return redirect('/')
-
-
-	new_game = Game.objects.create(bgg_id = game_id, name = game_name, year_published = year, plays = randrange(1, 5000), play_rank = 0, growth_rank = 0, growth = 0)
-
-	# new_game = Game.objects.create(bgg_id = randint(10000, 99999), name = "Game "+ str(randint(10000, 99999)), year_published = randint(1900, 2000), plays = randrange(1, 5000), play_rank = randint(10, 99), growth_rank = randint(10, 99), growth = round(uniform(-0.5,0.5),2))
-	play_data = getPlayData(game_id)
-
-	# years = 5
-
-	total_plays = 0
-
-	for monthly_play in play_data:
-		if(monthly_play[0] < year):
-			continue
-		total_plays += monthly_play[2]
-		new_play = MonthlyPlay.objects.create(game = new_game, month = monthly_play[1], year = monthly_play[0], plays = monthly_play[2])
-
-	new_game.plays = total_plays
-	growth_rate = ((play_data[0][2] + play_data[1][2] + play_data[2][2])/3) / ((play_data[3][2] + play_data[4][2] + play_data[5][2])/3)
-
-	new_game.growth = round(growth_rate * 100, 0) 
-
-	new_game.save()
-
+def top(request):
+	checkTopGames()
 	return redirect('/')
 	
 def fav(request, game_id):

@@ -4,7 +4,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	{% load static %}
-	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 	<title>Board Game Trends</title>
 </head>
@@ -18,6 +18,7 @@
 			<div class="collapse navbar-collapse navbar-nav" id="navbarNav">
 				<a class="nav-item nav-link" href="/plays">Played</a>
 				<a class="nav-item nav-link" href="/growth">Growing</a>
+				<a class="nav-item nav-link" href="/h">H-Index</a>
 				{% if request.user.is_authenticated %}
 				<a class="nav-item nav-link" href="/user/{{request.user.id}}">My Games</a>
 				<a class="nav-item nav-link" href="/logout">Logout</a>
@@ -30,8 +31,14 @@
 			</div>
 		</nav>
 		{% if request.user.is_authenticated %}
-		<div>
-			<form action="/add" method="POST" class="row">
+		<div class="row">
+			<div class="col-4">
+				<form action="/top" method="POST">
+					{% csrf_token %}
+					<button type="submit" class="btn btn-warning">Get Top Games</button>
+				</form>
+			</div>
+			<form action="/add" method="POST">
 				{% csrf_token %}
 				<div class="form-group col-4">
 					<label for="url">BGG URL</label>
@@ -44,14 +51,15 @@
 		</div>
 		{% endif %}
 		<div class="row">
-			<div class="col-md-6">
+			<div class="col">
 				<h2><a href="/plays">Most Played Games</a></h2>
 				<table class="table">
 					<thead>
 						<tr>
 							<th>Rank</th>
+							<th></th>
 							<th>Game</th>
-							<th>Plays</th>
+							<th>Monthly Plays</th>
 							{% if request.user.is_authenticated %}
 							<th>Favorite</th>
 							{% endif %}
@@ -61,7 +69,8 @@
 						{% for game in play_list %}
 						<tr>
 							<td>{{game.play_rank}}</td>
-							<td>{{game.name}}</td>
+							<td><img class="thumbnail" src="{{game.game_pic}}" alt="{{game.name}}"></td>
+							<td><a href="https://boardgamegeek.com/boardgame/{{game.bgg_id}}">{{game.name}}</a></td>
 							<td>{{game.plays}}</td>
 							{% if request.user.is_authenticated %}
 							{% if game in user_favs %}
@@ -85,12 +94,13 @@
 					</tbody>
 				</table>
 			</div>
-			<div class="col-md-6">
+			<div class="col">
 				<h2><a href="/growth">Fastest Growing Games</a></h2>
 				<table class="table">
 					<thead>
 						<tr>
 							<th>Rank</th>
+							<th></th>
 							<th>Game</th>
 							<th>Growth Rate</th>
 							{% if request.user.is_authenticated %}
@@ -102,7 +112,8 @@
 						{% for game in growth_list %}
 						<tr>
 							<td>{{game.growth_rank}}</td>
-							<td>{{game.name}}</td>
+							<td><img class="thumbnail" src="{{game.game_pic}}" alt="{{game.name}}"></td>
+							<td><a href="https://boardgamegeek.com/boardgame/{{game.bgg_id}}">{{game.name}}</a></td>
 							<td>{{game.growth}}%</td>
 							{% if request.user.is_authenticated %}
 							{% if game in user_favs %}
