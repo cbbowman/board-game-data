@@ -11,20 +11,29 @@ from pathlib import PurePosixPath
 import os.path, time
 
 def checkTopGames():
-	for i in range(3,5):
+	for i in range(1,10):
 		checkTopGamesByPage(i)
 	return
 
 def checkTopGamesByPage(page):
-	url = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
-	time.sleep(6)
-	page = requests.get(url)
+	url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
+	time.sleep(1)
+	page = requests.get(url1)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	table = soup.find('table')
-	links = table.find_all('a', {'class': 'primary'})
+	links1 = table.find_all('a', {'class': 'primary'})
+	
+	url2 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)
+	time.sleep(1)
+	page = requests.get(url2)
+	soup = BeautifulSoup(page.content, 'html.parser')
+	table = soup.find('table')
+	links2 = table.find_all('a', {'class': 'primary'})
+
 	url_list = []
-	for a in range(len(links)):
-		url_list.append(links[a]['href'])
+	for a in range(len(links1)):
+		url_list.append(links1[a]['href'])
+		url_list.append(links2[a]['href'])
 	for url in url_list:
 		addNewGame(url)
 
@@ -32,6 +41,8 @@ def addNewGame(url):
 	game_id = int(getIDfromURL(url))
 
 	if(len(Game.objects.filter(bgg_id = game_id))):
+		return
+	if(not checkForPlays(game_id)):
 		return
 	xml_link = getXMLURLfromGameID(game_id)
 	game_name, year, pic = getDataFromXML(xml_link)
@@ -52,12 +63,22 @@ def getIDfromURL(url):
 	).parts[2]
 	return id
 
+def checkForPlays(bgg_id):
+	url = "https://boardgamegeek.com///xmlapi2/plays?id="+str(bgg_id)
+	time.sleep(1)
+	page = requests.get(url)
+	soup = BeautifulSoup(page.content, 'lxml')
+	plays = int(soup.find('plays')['total'])
+	if plays>0:
+		return True
+	return False
+
 def getXMLURLfromGameID(gameid):
 	url = "https://boardgamegeek.com//xmlapi2/thing?id="+str(gameid)
 	return url
 
 def getDataFromXML(url):
-	time.sleep(6)
+	time.sleep(1)
 	page = requests.get(url)
 	soup = BeautifulSoup(page.content, 'lxml')
 	name = soup.find('name')
@@ -81,7 +102,7 @@ def updateMonthlyPlays(game_id):
 
 	this_game.plays = round(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[:12].aggregate((Avg('plays')))['plays__avg'],1)
 
-	this_game.growth = round(((this_game.plays/(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[13:24].aggregate((Avg('plays')))['plays__avg']))-1),3)*100
+	this_game.growth = round(((this_game.plays/(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[13:24].aggregate((Avg('plays')))['plays__avg']))-1),2)*100
 
 	this_game.h = round(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[:12].aggregate((Avg('h')))['h__avg'],1)
 
@@ -97,12 +118,16 @@ def getPlayData(game_id):
 	data = []
 	for i in range(2,len(rows)-1):
 		cells = rows[i].find_all('td')
-		data.append([int(cells[0].get_text(strip=True)[:4]), int(cells[0].get_text(strip=True)[-2:]), int(cells[2].get_text(strip=True))])
-		return data
+		year = int(cells[0].get_text(strip=True)[:4])
+		minYear=max(Game.objects.filter(bgg_id=game_id)[0].year_published,2003)
+		if year<minYear:
+			break
+		data.append([year, int(cells[0].get_text(strip=True)[-2:]), int(cells[2].get_text(strip=True))])
+	return data
 
 def getGameHiByMonth(game_id, month, year):
 	url = "https://boardgamegeek.com/playstats/thing/"+str(game_id)+"/"+str(year)+"-"+f"{month:02d}"
-	time.sleep(6)
+	time.sleep(1)
 	page = requests.get(url)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	table = soup.find('table')
@@ -116,13 +141,16 @@ def getGameHiByMonth(game_id, month, year):
 def hIndex(list):
 	if list == []:
 		return 0
-	list = list.sort(reverser=True)
+	if len(list)==1:
+		return 1
+	list.sort(reverse=True)
 	h_index = 0
 	for i in range(len(list)):
-		if list[i]>=i+1:
-			h_index=i+1
+		if list[i]>=(i+1):
+			h_index=(i+1)
 		else:
 			return h_index
+	return h_index
 
 class Game(models.Model):
 	bgg_id = models.PositiveIntegerField(default=0)

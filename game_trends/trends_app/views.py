@@ -154,6 +154,8 @@ def h(request):
 def add(request):
 	url = request.POST['url']
 	addNewGame(url)
+	if not len(Game.objects.filter(bgg_id=getIDfromURL(url))):
+		return redirect('/')
 	new_game = Game.objects.filter(bgg_id=getIDfromURL(url))[0]
 	return redirect('/fav/'+f'{new_game.id}')
 
