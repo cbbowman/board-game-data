@@ -1,27 +1,48 @@
 from django.shortcuts import redirect, render
-from .models import Game, addNewGame, checkTopGames
+from .models import Game, addNewGame, checkTopGames, getIDfromURL
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.sessions.models import Session
-from .models import getIDfromURL
+from django.db.models import F
 
 def index(request):
-	all_games = Game.objects.all()
-	# sorted_by_plays = sorted(all_games, key='play_rank')
-	# sorted_by_growth = sorted(all_games, key='growth_rank')
+
 	sorted_by_plays = Game.objects.order_by('-plays')
 	sorted_by_growth = Game.objects.order_by('-growth')
+	sorted_by_h = Game.objects.order_by('-h')
 
 	for rank in range(len(sorted_by_plays)):
 		game =  sorted_by_plays[rank]
-		game.play_rank = rank + 1
+		if game.plays == 0:
+			game.play_rank = 0
+		else:
+			game.play_rank = rank + 1
 		game.save()
 
 	for rank in range(len(sorted_by_growth)):
 		game =  sorted_by_growth[rank]
-		game.growth_rank = rank + 1
+		if game.growth == 0:
+			game.growth_rank = 0
+		else:
+			game.growth_rank = rank + 1
 		game.save()
+
+	for rank in range(len(sorted_by_h)):
+		game =  sorted_by_h[rank]
+		if game.h == 0:
+			game.h_rank = 0
+		else:
+			game.h_rank = rank + 1
+		game.save()
+	
+	low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('-total_rank')
+
+	for i in range(len(low_ranked_games)-200):
+		if low_ranked_games[i].fav_users.all().count()>0:
+			continue
+		else:
+			low_ranked_games[i].delete()
 
 	user_favs = {}
 	if request.user.is_authenticated:
