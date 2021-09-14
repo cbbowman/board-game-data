@@ -11,32 +11,50 @@ from pathlib import PurePosixPath
 import os.path, time
 import random
 
+def request(msg, slp=1):
+    '''A wrapper to make robust https requests.'''
+    status_code = 500  # Want to get a status-code of 200
+    while status_code != 200:
+        time.sleep(slp)  # Don't ping the server too often
+        try:
+            r = requests.get(msg)
+            status_code = r.status_code
+            if status_code != 200:
+                print("Server Error! Response Code %i. Retrying..." % (r.status_code))
+        except:
+            print("An exception has occurred, probably a momentory loss of connection. Waiting one seconds...")
+            time.sleep(1)
+    return r
+
 def checkTopGames():
-	while Game.objects.all().count()<300:
-		checkTopGamesByPage(random.randint(1,100))
+	while Game.objects.all().count()<100:
+		checkTopGamesByPage(1)
+		checkTopGamesByPage(random.randint(2,100))
 	return
 
 def checkTopGamesByPage(page):
 	url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
-	time.sleep(1)
-	page = requests.get(url1)
+	#time.sleep(1)
+	page = request(url1)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	table = soup.find('table')
 	links1 = table.find_all('a', {'class': 'primary'})
 	
 	url2 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)
-	time.sleep(1)
-	page = requests.get(url2)
+	#time.sleep(1)
+	page = request(url2)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	table = soup.find('table')
 	links2 = table.find_all('a', {'class': 'primary'})
 
 	url_list = []
+	#for a in range(10):
 	for a in range(len(links1)):
 		url_list.append(links1[a]['href'])
 		url_list.append(links2[a]['href'])
 	for url in url_list:
 		addNewGame(url)
+	#addNewGame(url_list[random.randint(1,len(url_list))])
 
 def addNewGame(url):
 	game_id = int(getIDfromURL(url))
@@ -66,8 +84,8 @@ def getIDfromURL(url):
 
 def checkForPlays(bgg_id):
 	url = "https://boardgamegeek.com///xmlapi2/plays?id="+str(bgg_id)
-	time.sleep(1)
-	page = requests.get(url)
+	#time.sleep(1)
+	page = request(url)
 	soup = BeautifulSoup(page.content, 'lxml')
 	plays = int(soup.find('plays')['total'])
 	if plays>0:
@@ -79,8 +97,8 @@ def getXMLURLfromGameID(gameid):
 	return url
 
 def getDataFromXML(url):
-	time.sleep(1)
-	page = requests.get(url)
+	#time.sleep(1)
+	page = request(url)
 	soup = BeautifulSoup(page.content, 'lxml')
 	name = soup.find('name')
 	title = name['value']
@@ -111,7 +129,7 @@ def updateMonthlyPlays(game_id):
 
 def getPlayData(game_id):
 	url =  "https://www.boardgamegeek.com/playsummary/thing/"+str(game_id)
-	page = requests.get(url)
+	page = request(url)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	table = soup.find_all('table')[1]
 	rows = table.find_all('tr')
@@ -129,7 +147,7 @@ def getPlayData(game_id):
 def getGameHiByMonth(game_id, month, year):
 	url = "https://boardgamegeek.com/playstats/thing/"+str(game_id)+"/"+str(year)+"-"+f"{month:02d}"
 	time.sleep(1)
-	page = requests.get(url)
+	page = request(url)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	table = soup.find('table')
 	tds = table.find_all('td', {'class': 'lf'})
