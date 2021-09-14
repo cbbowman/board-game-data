@@ -1,12 +1,8 @@
-from hashlib import new
-from typing import ContextManager
-from django.shortcuts import redirect, render, HttpResponse
-from .models import Game, MonthlyPlay, getXMLURLfromGameID, getDataFromXML, getPlayData, addNewGame, checkTopGames
-from django.contrib.auth.models import User, UserManager
+from django.shortcuts import redirect, render
+from .models import Game, addNewGame, checkTopGames
+from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from random import randrange, seed, uniform
-from random import randint
 from django.contrib.sessions.models import Session
 from .models import getIDfromURL
 
