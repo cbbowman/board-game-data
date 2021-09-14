@@ -50,13 +50,11 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<th>Play Rank</th>
-							<th>Growth Rank</th>
-							<th>Game</th>
 							<th></th>
+							<th>Game</th>
 							<th>Year</th>
-							<th>Plays</th>
-							<th>Growth</th>
+							<th>Monthly Players</th>
+							<th>Annual Growth</th>
 							<th>H-Index</th>
 							{% if request.user.is_authenticated %}
 							<th>Edit</th>
@@ -66,13 +64,11 @@
 					<tbody>
 						{% for game in fav_games %}
 						<tr>
-							<td>{{game.play_rank}}</td>
-							<td>{{game.growth_rank}}</td>
 							<td><img class="thumbnail" src="{{game.game_pic}}" alt="{{game.name}}"></td>
 							<td><a href="https://boardgamegeek.com/boardgame/{{game.bgg_id}}">{{game.name}}</a></td>
 							<td>{{game.year_published}}</td>
 							<td>{{game.plays}}</td>
-							<td>{{game.growth}}</td>
+							<td>{{game.growth}}%</td>
 							<td>{{game.h}}</td>
 							<td><form action="/unfav/{{game.id}}" method="POST" class="row">
 								{% csrf_token %}

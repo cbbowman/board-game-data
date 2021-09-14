@@ -52,14 +52,14 @@
 		{% endif %}
 		<div class="row">
 			<div class="col">
-				<h2><a href="/plays">Most Played Games</a></h2>
+				<h2><a href="/plays">Most Players</a></h2>
 				<table class="table">
 					<thead>
 						<tr>
 							<th>Rank</th>
 							<th></th>
 							<th>Game</th>
-							<th>Monthly Plays</th>
+							<th>Monthly Players</th>
 							{% if request.user.is_authenticated %}
 							<th>Favorite</th>
 							{% endif %}
@@ -95,14 +95,14 @@
 				</table>
 			</div>
 			<div class="col">
-				<h2><a href="/growth">Fastest Growing Games</a></h2>
+				<h2><a href="/growth">Highest Growth</a></h2>
 				<table class="table">
 					<thead>
 						<tr>
 							<th>Rank</th>
 							<th></th>
 							<th>Game</th>
-							<th>Growth Rate</th>
+							<th>Annual Growth</th>
 							{% if request.user.is_authenticated %}
 							<th>Favorite</th>
 							{% endif %}
