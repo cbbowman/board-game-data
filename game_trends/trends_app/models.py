@@ -81,7 +81,7 @@ def checkTopGames():
 	return
 
 def checkTopGamesByPage(page):
-	# addNewGame['https://boardgamegeek.com/boardgame/205322/oregon-trail-card-game']
+	addNewGame['https://boardgamegeek.com/boardgame/205322/oregon-trail-card-game']
 	# url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
 	# #time.sleep(1)
 	# page = request(url1)
