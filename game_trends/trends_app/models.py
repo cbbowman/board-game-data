@@ -1,6 +1,6 @@
 from decimal import ROUND_CEILING
 from django.db import models
-from django.db.models import Avg, FloatField
+from django.db.models import Avg, FloatField, F
 from django.db.models.deletion import CASCADE
 from django.db.models.functions import Cast
 from django.db.models.fields.related import ForeignKey
@@ -35,7 +35,7 @@ def checkTopGames():
 		pageWeights=[]
 		for i in range(0,99):
 			pageWeights.append(100-i)
-		checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=1)[0])
+		checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=2)[0])
 		#checkTopGamesByPage(1)
 		#checkTopGamesByPage(random.randint(2,100))
 
