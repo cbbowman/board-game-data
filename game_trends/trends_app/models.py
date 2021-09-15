@@ -192,7 +192,7 @@ def getGameHiByMonth(game_id, month, year):
 	table = soup.find('table')
 	tds = table.find_all('td', {'class': 'lf'})
 	data = []
-	for i in range(len(tds)):
+	for i in range(min([len(tds),25])):
 		a = tds[i].find('a')
 		data.append(int(a.get_text()))
 	return hIndex(data)
