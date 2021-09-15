@@ -27,7 +27,7 @@ def request(msg, slp=1):
     return r
 
 def checkTopGames():
-	checkTopGamesByPage(2)
+	checkTopGamesByPage(17)
 	numGames = Game.objects.all().count()
 	# while Game.objects.all().count()<(2*numGames):
 	# 	pages=range(1,100)
@@ -100,7 +100,8 @@ def checkTopGamesByPage(page):
 	for a in range(len(links1)):
 		url_list.append(links1[a]['href'])
 		url_list.append(links2[a]['href'])
-	addNewGame[url_list[random.randint(1,100)]]
+	# addNewGame[url_list[random.randint(1,100)]]
+	addNewGame[url_list[99]]
 	# for url in url_list:
 		#addNewGame(url)
 	#addNewGame(url_list[random.randint(1,len(url_list))])
