@@ -29,8 +29,13 @@ def request(msg, slp=1):
 def checkTopGames():
 	numGames = Game.objects.all().count()
 	while Game.objects.all().count()<(2*numGames):
-		checkTopGamesByPage(1)
-		checkTopGamesByPage(random.randint(2,100))
+		pages=range(1,100)
+		pageWeights=[]
+		for i in pages:
+			weights[i]=100-i
+		checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=1)[0])
+		#checkTopGamesByPage(1)
+		#checkTopGamesByPage(random.randint(2,100))
 
 		sorted_by_plays = Game.objects.order_by('-plays')
 		sorted_by_growth = Game.objects.order_by('-growth')
@@ -70,7 +75,8 @@ def checkTopGames():
 				continue
 			else:
 				low_ranked_games[i].delete()
-	return checkTopGames()
+	#return checkTopGames()
+	return
 
 def checkTopGamesByPage(page):
 	url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
@@ -92,8 +98,9 @@ def checkTopGamesByPage(page):
 	for a in range(len(links1)):
 		url_list.append(links1[a]['href'])
 		url_list.append(links2[a]['href'])
-	for url in url_list:
-		addNewGame(url)
+	addNewGame[url_list[random.randint(1,100)]]
+	# for url in url_list:
+		#addNewGame(url)
 	#addNewGame(url_list[random.randint(1,len(url_list))])
 
 def addNewGame(url):
