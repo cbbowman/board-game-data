@@ -32,7 +32,7 @@ def checkTopGames():
 		pages=range(1,100)
 		pageWeights=[]
 		for i in pages:
-			weights[i]=100-i
+			pageWeights[i]=100-i
 		checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=1)[0])
 		#checkTopGamesByPage(1)
 		#checkTopGamesByPage(random.randint(2,100))
