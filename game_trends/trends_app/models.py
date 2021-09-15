@@ -105,6 +105,7 @@ def checkTopGamesByPage(page):
 	# for url in url_list:
 		#addNewGame(url)
 	#addNewGame(url_list[random.randint(1,len(url_list))])
+	return
 
 def addNewGame(url):
 	game_id = int(getIDfromURL(url))
