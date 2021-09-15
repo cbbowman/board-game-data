@@ -33,7 +33,8 @@ def checkTopGames():
 		pageWeights=[]
 		for i in range(0,99):
 			pageWeights.append(100-i)
-		checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=1)[0])
+		# checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=1)[0])
+		checkTopGamesByPage(2)
 		#checkTopGamesByPage(1)
 		#checkTopGamesByPage(random.randint(2,100))
 
