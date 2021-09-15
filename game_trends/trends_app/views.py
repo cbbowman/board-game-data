@@ -180,7 +180,7 @@ def add(request):
 	return redirect('/fav/'+f'{new_game.id}')
 
 def top(request):
-	checkTopGamesByPage(10)
+	checkTopGames()
 	return redirect('/')
 	
 def fav(request, game_id):
