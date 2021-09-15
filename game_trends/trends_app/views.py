@@ -39,13 +39,13 @@ def index(request):
 			game.h_rank = rank + 1
 		game.save()
 	
-	low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('-total_rank')
+	# low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('-total_rank')
 
-	for i in range(len(low_ranked_games)-100):
-		if low_ranked_games[i].fav_users.all().count()>0:
-			continue
-		else:
-			low_ranked_games[i].delete()
+	# for i in range(len(low_ranked_games)-100):
+	# 	if low_ranked_games[i].fav_users.all().count()>0:
+	# 		continue
+	# 	else:
+	# 		low_ranked_games[i].delete()
 
 	user_favs = {}
 	if request.user.is_authenticated:
