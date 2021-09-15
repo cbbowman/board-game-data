@@ -189,7 +189,7 @@ def getPlayData(game_id):
 	for i in range(2,len(rows)-1):
 		cells = rows[i].find_all('td')
 		year = int(cells[0].get_text(strip=True)[:4])
-		minYear=max(Game.objects.filter(bgg_id=game_id)[0].year_published,2003)
+		minYear=max(Game.objects.filter(bgg_id=game_id)[0].year_published,2018)
 		if year<minYear:
 			break
 		data.append([year, int(cells[0].get_text(strip=True)[-2:]), int(cells[2].get_text(strip=True))])
