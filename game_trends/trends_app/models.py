@@ -31,8 +31,8 @@ def checkTopGames():
 	while Game.objects.all().count()<(2*numGames):
 		pages=range(1,100)
 		pageWeights=[]
-		for i in pages:
-			pageWeights[i]=100-i
+		for i in range(0,99):
+			pageWeights.append(100-i)
 		checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=1)[0])
 		#checkTopGamesByPage(1)
 		#checkTopGamesByPage(random.randint(2,100))
