@@ -1,3 +1,4 @@
+from decimal import ROUND_CEILING
 from django.db import models
 from django.db.models import Avg, FloatField
 from django.db.models.deletion import CASCADE
@@ -29,7 +30,7 @@ def request(msg, slp=1):
 def checkTopGames():
 	# checkTopGamesByPage(10)
 	numGames = Game.objects.all().count()
-	while Game.objects.all().count()<(2*numGames):
+	while Game.objects.all().count()<(1.05*numGames):
 		pages=range(1,100)
 		pageWeights=[]
 		for i in range(0,99):
@@ -71,7 +72,7 @@ def checkTopGames():
 		
 		low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('-total_rank')
 
-		for i in range(len(low_ranked_games)/2):
+		for i in range(ROUND_CEILING(len(low_ranked_games)/100)):
 			if low_ranked_games[i].fav_users.all().count()>0:
 				continue
 			else:
