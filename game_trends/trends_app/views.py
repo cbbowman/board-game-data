@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from .models import Game, addNewGame, checkTopGames, getIDfromURL
+from .models import Game, addNewGame, checkTopGames, checkTopGamesByPage, getIDfromURL
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -180,7 +180,7 @@ def add(request):
 	return redirect('/fav/'+f'{new_game.id}')
 
 def top(request):
-	checkTopGames()
+	checkTopGamesByPage(10)
 	return redirect('/')
 	
 def fav(request, game_id):
