@@ -81,27 +81,28 @@ def checkTopGames():
 	return
 
 def checkTopGamesByPage(page):
-	url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
-	#time.sleep(1)
-	page = request(url1)
-	soup = BeautifulSoup(page.content, 'html.parser')
-	table = soup.find('table')
-	links1 = table.find_all('a', {'class': 'primary'})
-	
-	url2 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)
-	#time.sleep(1)
-	page = request(url2)
-	soup = BeautifulSoup(page.content, 'html.parser')
-	table = soup.find('table')
-	links2 = table.find_all('a', {'class': 'primary'})
-
-	url_list = []
-	#for a in range(12):
-	for a in range(100):
-		url_list.append(links1[a]['href'])
-		url_list.append(links2[a]['href'])
-	# addNewGame[url_list[random.randint(1,100)]]
 	addNewGame['https://boardgamegeek.com/boardgame/205322/oregon-trail-card-game']
+	# url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
+	# #time.sleep(1)
+	# page = request(url1)
+	# soup = BeautifulSoup(page.content, 'html.parser')
+	# table = soup.find('table')
+	# links1 = table.find_all('a', {'class': 'primary'})
+	
+	# url2 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)
+	# #time.sleep(1)
+	# page = request(url2)
+	# soup = BeautifulSoup(page.content, 'html.parser')
+	# table = soup.find('table')
+	# links2 = table.find_all('a', {'class': 'primary'})
+
+	# url_list = []
+	# #for a in range(12):
+	# for a in range(100):
+	# 	url_list.append(links1[a]['href'])
+	# 	url_list.append(links2[a]['href'])
+	# addNewGame[url_list[random.randint(1,100)]]
+	# addNewGame['https://boardgamegeek.com/boardgame/205322/oregon-trail-card-game']
 	# addNewGame[url_list[10]]
 	# for url in url_list:
 		#addNewGame(url)
