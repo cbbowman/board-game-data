@@ -27,55 +27,56 @@ def request(msg, slp=1):
     return r
 
 def checkTopGames():
+	checkTopGamesByPage(2)
 	numGames = Game.objects.all().count()
-	while Game.objects.all().count()<(2*numGames):
-		pages=range(1,100)
-		pageWeights=[]
-		for i in range(0,99):
-			pageWeights.append(100-i)
-		# checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=1)[0])
-		checkTopGamesByPage(2)
-		#checkTopGamesByPage(1)
-		#checkTopGamesByPage(random.randint(2,100))
+	# while Game.objects.all().count()<(2*numGames):
+	# 	pages=range(1,100)
+	# 	pageWeights=[]
+	# 	for i in range(0,99):
+	# 		pageWeights.append(100-i)
+	# 	# checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=1)[0])
+	# 	checkTopGamesByPage(2)
+	# 	#checkTopGamesByPage(1)
+	# 	#checkTopGamesByPage(random.randint(2,100))
 
-		sorted_by_plays = Game.objects.order_by('-plays')
-		sorted_by_growth = Game.objects.order_by('-growth')
-		sorted_by_h = Game.objects.order_by('-h')
+	# 	sorted_by_plays = Game.objects.order_by('-plays')
+	# 	sorted_by_growth = Game.objects.order_by('-growth')
+	# 	sorted_by_h = Game.objects.order_by('-h')
 
-		for rank in range(len(sorted_by_plays)):
-			game =  sorted_by_plays[rank]
-			if game.plays == 0:
-				game.play_rank = rank +1
-				#game.play_rank = 0
-			else:
-				game.play_rank = rank + 1
-			game.save()
+	# 	for rank in range(len(sorted_by_plays)):
+	# 		game =  sorted_by_plays[rank]
+	# 		if game.plays == 0:
+	# 			game.play_rank = rank +1
+	# 			#game.play_rank = 0
+	# 		else:
+	# 			game.play_rank = rank + 1
+	# 		game.save()
 
-		for rank in range(len(sorted_by_growth)):
-			game =  sorted_by_growth[rank]
-			if game.growth == 0:
-				#game.growth_rank = 0
-				game.growth_rank = rank +1
-			else:
-				game.growth_rank = rank + 1
-			game.save()
+	# 	for rank in range(len(sorted_by_growth)):
+	# 		game =  sorted_by_growth[rank]
+	# 		if game.growth == 0:
+	# 			#game.growth_rank = 0
+	# 			game.growth_rank = rank +1
+	# 		else:
+	# 			game.growth_rank = rank + 1
+	# 		game.save()
 
-		for rank in range(len(sorted_by_h)):
-			game =  sorted_by_h[rank]
-			if game.h == 0:
-				game.h_rank = rank +1
-				#game.h_rank = 0
-			else:
-				game.h_rank = rank + 1
-			game.save()
+	# 	for rank in range(len(sorted_by_h)):
+	# 		game =  sorted_by_h[rank]
+	# 		if game.h == 0:
+	# 			game.h_rank = rank +1
+	# 			#game.h_rank = 0
+	# 		else:
+	# 			game.h_rank = rank + 1
+	# 		game.save()
 		
-		low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('-total_rank')
+	# 	low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('-total_rank')
 
-		for i in range(len(low_ranked_games)/2):
-			if low_ranked_games[i].fav_users.all().count()>0:
-				continue
-			else:
-				low_ranked_games[i].delete()
+	# 	for i in range(len(low_ranked_games)/2):
+	# 		if low_ranked_games[i].fav_users.all().count()>0:
+	# 			continue
+	# 		else:
+	# 			low_ranked_games[i].delete()
 	#return checkTopGames()
 	return
 
