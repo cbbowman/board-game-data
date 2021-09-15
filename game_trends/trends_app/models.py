@@ -27,8 +27,8 @@ def request(msg, slp=1):
     return r
 
 def checkTopGames():
-	checkTopGamesByPage(17)
-	numGames = Game.objects.all().count()
+	checkTopGamesByPage(10)
+	# numGames = Game.objects.all().count()
 	# while Game.objects.all().count()<(2*numGames):
 	# 	pages=range(1,100)
 	# 	pageWeights=[]
@@ -96,12 +96,13 @@ def checkTopGamesByPage(page):
 	links2 = table.find_all('a', {'class': 'primary'})
 
 	url_list = []
-	#for a in range(10):
-	for a in range(len(links1)):
+	#for a in range(12):
+	for a in range(100):
 		url_list.append(links1[a]['href'])
 		url_list.append(links2[a]['href'])
 	# addNewGame[url_list[random.randint(1,100)]]
-	addNewGame[url_list[99]]
+	addNewGame['https://boardgamegeek.com/boardgame/205322/oregon-trail-card-game']
+	# addNewGame[url_list[10]]
 	# for url in url_list:
 		#addNewGame(url)
 	#addNewGame(url_list[random.randint(1,len(url_list))])
