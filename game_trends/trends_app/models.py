@@ -13,7 +13,7 @@ from pathlib import PurePosixPath
 import os.path, time
 import random
 
-max_size = 25
+max_size = 500
 
 def deleteErrorGames():
 	zeros = Game.objects.filter(plays = 0)
@@ -82,16 +82,16 @@ def checkTopGames():
 		game.save()
 	
 	low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('-total_rank')
-	# if len(low_ranked_games)>max_size:
-	# 	for i in range(len(low_ranked_games)-max_size):
-	# 		# low_ranked_games[i].delete()
-	# 		# pass
-	# 		if len(low_ranked_games[i].fav_users.all())>0:
-	# 			continue
-	# 		else:
-	# 			low_ranked_games[i].delete()
-	# return checkTopGames()
-	return
+	if len(low_ranked_games)>max_size:
+		for i in range(len(low_ranked_games)-max_size):
+			# low_ranked_games[i].delete()
+			# pass
+			if len(low_ranked_games[i].fav_users.all())>0:
+				continue
+			else:
+				low_ranked_games[i].delete()
+	return checkTopGames()
+	# return
 
 
 def checkTopGamesByPage(page):
@@ -111,7 +111,9 @@ def checkTopGamesByPage(page):
 	for a in range(100):
 		url_list.append(links1[a]['href'])
 		url_list.append(links2[a]['href'])
-	addNewGame(url_list[random.randint(1,200)])
+	# addNewGame(url_list[random.randint(1,200)])
+	for url in url_list:
+		addNewGame(url)
 	return
 
 def addNewGame(url):
