@@ -37,7 +37,7 @@ def request(msg, slp=1):
 
 def checkTopGames():
 	numGames = Game.objects.all().count()
-	while Game.objects.all().count()<max_size:
+	while Game.objects.all().count()<max_size+1:
 		pages=range(1,100)
 		pageWeights=[]
 		for i in range(0,99):
