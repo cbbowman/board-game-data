@@ -81,15 +81,16 @@ def checkTopGames():
 			game.h_growth_rank = rank + 1
 		game.save()
 	
-	low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('-total_rank')
-	if len(low_ranked_games)>max_size:
-		for i in range(len(low_ranked_games)-max_size):
-			if low_ranked_games[i].fav_users.all().count()>0:
-				continue
-			else:
-				low_ranked_games[i].delete()
+	# low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('-total_rank')
+	# if len(low_ranked_games)>max_size:
+	# 	for i in range(len(low_ranked_games)-max_size):
+	# 		if low_ranked_games[i].fav_users.all().count()>0:
+	# 			continue
+	# 		else:
+	# 			low_ranked_games[i].delete()
 	# return checkTopGames()
 	return
+
 
 def checkTopGamesByPage(page):
 	url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
