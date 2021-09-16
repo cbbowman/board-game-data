@@ -72,7 +72,7 @@
 							<td><a href="https://boardgamegeek.com/boardgame/{{game.bgg_id}}">{{game.name}}</a></td>
 							<td>{{game.year_published}}</td>
 							<td>{{game.h}}</td>
-							<td>{{game.h_growth}}</td>
+							<td>{{game.h_growth}}%</td>
 							{% if request.user.is_authenticated %}
 							{% if game in user_favs %}
 							<td><form action="/unfav/{{game.id}}" method="POST" class="row">

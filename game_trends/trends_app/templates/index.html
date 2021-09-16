@@ -76,7 +76,7 @@
 							<td><img class="thumbnail" src="{{game.game_pic}}" alt="{{game.name}}"></td>
 							<td><a href="https://boardgamegeek.com/boardgame/{{game.bgg_id}}">{{game.name}}</a></td>
 							<td>{{game.plays}}</td>
-							<td>{{game.growth}}</td>
+							<td>{{game.growth}}%</td>
 							{% if request.user.is_authenticated %}
 							{% if game in user_favs %}
 							<td><form action="/unfav/{{game.id}}" method="POST" class="row">
@@ -120,7 +120,7 @@
 							<td>{{game.h_rank}}</td>
 							<td><img class="thumbnail" src="{{game.game_pic}}" alt="{{game.name}}"></td>
 							<td><a href="https://boardgamegeek.com/boardgame/{{game.bgg_id}}">{{game.name}}</a></td>
-							<td>{{game.h}}%</td>
+							<td>{{game.h}}</td>
 							<td>{{game.h_growth}}%</td>
 							{% if request.user.is_authenticated %}
 							{% if game in user_favs %}

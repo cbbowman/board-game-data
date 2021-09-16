@@ -88,8 +88,8 @@ def checkTopGames():
 				continue
 			else:
 				low_ranked_games[i].delete()
-	return checkTopGames()
-	#return
+	# return checkTopGames()
+	return
 
 def checkTopGamesByPage(page):
 	url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
