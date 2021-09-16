@@ -13,6 +13,7 @@ def index(request):
 	sorted_by_plays = Game.objects.order_by('-plays')
 	sorted_by_growth = Game.objects.order_by('-growth')
 	sorted_by_h = Game.objects.order_by('-h')
+	sorted_by_h_growth = Game.objects.order_by('-h_growth')
 
 	for rank in range(len(sorted_by_plays)):
 		game =  sorted_by_plays[rank]
@@ -40,6 +41,14 @@ def index(request):
 		else:
 			game.h_rank = rank + 1
 		game.save()
+
+	for rank in range(len(sorted_by_h_growth)):
+		game =  sorted_by_h_growth[rank]
+		if game.h_growth == 0:
+			game.h_growth_rank = rank +1
+		else:
+			game.h_growth_rank = rank + 1
+		game.save()
 	
 	#low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('-total_rank')
 
@@ -56,7 +65,8 @@ def index(request):
 
 	context = {
 		'play_list': sorted_by_plays[:10],
-		'growth_list': sorted_by_growth[:10],
+		'h_list': sorted_by_h[:10],
+		# 'growth_list': sorted_by_growth[:10],
 		'user_favs': user_favs
 	}
 
@@ -116,7 +126,7 @@ def user(request, user_id):
 	}
 	return render(request, 'profile.html', context)
 	
-def plays(request):
+def players(request):
 	sorted_by_plays = Game.objects.order_by('-plays')
 
 	for rank in range(len(sorted_by_plays)):
@@ -135,7 +145,7 @@ def plays(request):
 	}
 	return render(request, 'plays.html', context)
 	
-def growth(request):
+def player_growth(request):
 	sorted_by_growth = Game.objects.order_by('-growth')
 
 	for rank in range(len(sorted_by_growth)):
@@ -168,10 +178,29 @@ def h(request):
 		user_favs = this_user.fav_games.all()
 
 	context = {
-		'play_list': sorted_by_h,
+		'h_list': sorted_by_h,
 		'user_favs': user_favs
 	}
 	return render(request, 'h_index.html', context)
+	
+def h_growth(request):
+	sorted_by_h_growth = Game.objects.order_by('-h_growth')
+
+	for rank in range(len(sorted_by_h_growth)):
+		game =  sorted_by_h_growth[rank]
+		game.h_growth_rank = rank + 1
+		game.save()
+
+	user_favs = {}
+	if request.user.is_authenticated:
+		this_user = User.objects.filter(id = request.session['user_id'])[0]
+		user_favs = this_user.fav_games.all()
+
+	context = {
+		'h_growth_list': sorted_by_h_growth,
+		'user_favs': user_favs
+	}
+	return render(request, 'h_growth.html', context)
 	
 def add(request):
 	url = request.POST['url']

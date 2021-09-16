@@ -37,16 +37,17 @@ def request(msg, slp=1):
 
 def checkTopGames():
 	numGames = Game.objects.all().count()
+	pages=range(1,100)
+	pageWeights=[]
+	for i in range(0,99):
+		pageWeights.append(100-i)
 	while Game.objects.all().count()<max_size*1.05:
-		pages=range(1,100)
-		pageWeights=[]
-		for i in range(0,99):
-			pageWeights.append(100-i)
 		checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=2)[0])
 
 	sorted_by_plays = Game.objects.order_by('-plays')
 	sorted_by_growth = Game.objects.order_by('-growth')
 	sorted_by_h = Game.objects.order_by('-h')
+	sorted_by_h_growth = Game.objects.order_by('-h_growth')
 
 	for rank in range(len(sorted_by_plays)):
 		game =  sorted_by_plays[rank]
@@ -71,8 +72,16 @@ def checkTopGames():
 		else:
 			game.h_rank = rank + 1
 		game.save()
+
+	for rank in range(len(sorted_by_h_growth)):
+		game =  sorted_by_h_growth[rank]
+		if game.h_growth == 0:
+			game.h_growth_rank = rank +1
+		else:
+			game.h_growth_rank = rank + 1
+		game.save()
 	
-	low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('-total_rank')
+	low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('-total_rank')
 
 	for i in range(len(low_ranked_games)-max_size):
 		if low_ranked_games[i].fav_users.all().count()>0:
@@ -115,7 +124,7 @@ def addNewGame(url):
 	if(year > 2019):
 		return
 
-	new_game = Game.objects.create(bgg_id = game_id, name = game_name, game_pic = pic, year_published = year, plays = 0, play_rank = 0, growth_rank = 0, growth = 0)
+	new_game = Game.objects.create(bgg_id = game_id, name = game_name, game_pic = pic, year_published = year, plays = 0, play_rank = 0, growth_rank = 0, growth = 0, h = 0, h_rank = 0, h_growth =0, h_growth_rank = 0)
 	
 	updateMonthlyPlays(game_id)
 	return
@@ -168,6 +177,8 @@ def updateMonthlyPlays(game_id):
 	this_game.growth = round(((this_game.plays/(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[13:24].aggregate((Avg('plays')))['plays__avg']))-1),2)*100
 
 	this_game.h = round(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[:12].aggregate((Avg('h')))['h__avg'],1)
+
+	this_game.h_growth = round(((this_game.h/(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[13:24].aggregate((Avg('h')))['h__avg']))-1),2)*100
 
 	this_game.save()
 
@@ -226,6 +237,8 @@ class Game(models.Model):
 	growth = models.SmallIntegerField(default=0)
 	h = models.FloatField(default=0)
 	h_rank = models.PositiveSmallIntegerField(default=0)
+	h_growth_rank = models.PositiveSmallIntegerField(default=0)
+	h_growth = models.SmallIntegerField(default=0)
 	fav_users = models.ManyToManyField(User, related_name='fav_games')
 	
 class MonthlyPlay(models.Model):
