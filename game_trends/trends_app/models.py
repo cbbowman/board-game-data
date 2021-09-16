@@ -13,7 +13,7 @@ from pathlib import PurePosixPath
 import os.path, time
 import random
 
-max_size = 50
+max_size = 100
 
 def deleteErrorGames():
 	zeros = Game.objects.filter(plays = 0)
@@ -37,7 +37,7 @@ def request(msg, slp=1):
 
 def checkTopGames():
 	numGames = Game.objects.all().count()
-	while Game.objects.all().count()<max_size+1:
+	while Game.objects.all().count()<max_size*1.05:
 		pages=range(1,100)
 		pageWeights=[]
 		for i in range(0,99):
@@ -75,13 +75,12 @@ def checkTopGames():
 	low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('-total_rank')
 
 	for i in range(len(low_ranked_games)-max_size):
-	# for i in range((low_ranked_games.count())-10):
 		if low_ranked_games[i].fav_users.all().count()>0:
 			continue
 		else:
 			low_ranked_games[i].delete()
-	# return checkTopGames()
-	return
+	return checkTopGames()
+	#return
 
 def checkTopGamesByPage(page):
 	url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
@@ -131,7 +130,6 @@ def getIDfromURL(url):
 
 def checkForPlays(bgg_id):
 	url = "https://boardgamegeek.com///xmlapi2/plays?id="+str(bgg_id)
-	#time.sleep(1)
 	page = request(url)
 	soup = BeautifulSoup(page.content, 'lxml')
 	plays = int(soup.find('plays')['total'])
@@ -144,7 +142,6 @@ def getXMLURLfromGameID(gameid):
 	return url
 
 def getDataFromXML(url):
-	#time.sleep(1)
 	page = request(url)
 	soup = BeautifulSoup(page.content, 'lxml')
 	name = soup.find('name')
