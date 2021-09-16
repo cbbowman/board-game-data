@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from .models import Game, addNewGame, checkTopGames, checkTopGamesByPage, getIDfromURL
+from .models import Game, addNewGame, checkTopGames, deleteErrorGames, getIDfromURL
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -7,6 +7,8 @@ from django.contrib.sessions.models import Session
 from django.db.models import F
 
 def index(request):
+
+	deleteErrorGames()
 
 	sorted_by_plays = Game.objects.order_by('-plays')
 	sorted_by_growth = Game.objects.order_by('-growth')

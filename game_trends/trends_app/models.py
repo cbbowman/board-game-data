@@ -13,6 +13,13 @@ from pathlib import PurePosixPath
 import os.path, time
 import random
 
+max_size = 50
+
+def deleteErrorGames():
+	zeros = Game.objects.filter(plays = 0)
+	zeros.delete()
+	return
+
 def request(msg, slp=1):
     '''A wrapper to make robust https requests.'''
     status_code = 500  # Want to get a status-code of 200
@@ -29,16 +36,13 @@ def request(msg, slp=1):
     return r
 
 def checkTopGames():
-	# checkTopGamesByPage(10)
 	numGames = Game.objects.all().count()
-	while Game.objects.all().count()<(1.01*numGames):
+	while Game.objects.all().count()<max_size:
 		pages=range(1,100)
 		pageWeights=[]
 		for i in range(0,99):
 			pageWeights.append(100-i)
 		checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=2)[0])
-		#checkTopGamesByPage(1)
-		#checkTopGamesByPage(random.randint(2,100))
 
 	sorted_by_plays = Game.objects.order_by('-plays')
 	sorted_by_growth = Game.objects.order_by('-growth')
@@ -48,7 +52,6 @@ def checkTopGames():
 		game =  sorted_by_plays[rank]
 		if game.plays == 0:
 			game.play_rank = rank +1
-			#game.play_rank = 0
 		else:
 			game.play_rank = rank + 1
 		game.save()
@@ -56,7 +59,6 @@ def checkTopGames():
 	for rank in range(len(sorted_by_growth)):
 		game =  sorted_by_growth[rank]
 		if game.growth == 0:
-			#game.growth_rank = 0
 			game.growth_rank = rank +1
 		else:
 			game.growth_rank = rank + 1
@@ -66,47 +68,39 @@ def checkTopGames():
 		game =  sorted_by_h[rank]
 		if game.h == 0:
 			game.h_rank = rank +1
-			#game.h_rank = 0
 		else:
 			game.h_rank = rank + 1
 		game.save()
 	
 	low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('-total_rank')
 
-	for i in range(ceil(0.01 * len(low_ranked_games))):
+	for i in range(len(low_ranked_games)-max_size):
+	# for i in range((low_ranked_games.count())-10):
 		if low_ranked_games[i].fav_users.all().count()>0:
 			continue
 		else:
 			low_ranked_games[i].delete()
-	return checkTopGames()
-	# return
+	# return checkTopGames()
+	return
 
 def checkTopGamesByPage(page):
 	url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
-	#time.sleep(1)
 	page = request(url1)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	table = soup.find('table')
 	links1 = table.find_all('a', {'class': 'primary'})
 	
 	url2 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)
-	#time.sleep(1)
 	page = request(url2)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	table = soup.find('table')
 	links2 = table.find_all('a', {'class': 'primary'})
 
 	url_list = []
-	#for a in range(12):
 	for a in range(100):
 		url_list.append(links1[a]['href'])
 		url_list.append(links2[a]['href'])
-	addNewGame(url_list[random.randint(1,100)])
-	# addNewGame['https://boardgamegeek.com/boardgame/205322/oregon-trail-card-game']
-	# addNewGame[url_list[10]]
-	# for url in url_list:
-		#addNewGame(url)
-	#addNewGame(url_list[random.randint(1,len(url_list))])
+	addNewGame(url_list[random.randint(1,200)])
 	return
 
 def addNewGame(url):
