@@ -13,7 +13,7 @@ from pathlib import PurePosixPath
 import os.path, time
 import random
 
-max_size = 5
+max_size = 10
 
 def deleteErrorGames():
 	zeros = Game.objects.filter(plays = 0)
