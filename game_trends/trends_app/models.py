@@ -133,7 +133,7 @@ def addNewGame(url):
 		return
 
 	# new_game = Game.objects.create(bgg_id = game_id, name = game_name, game_pic = pic, year_published = year, plays = 0, play_rank = 0, growth_rank = 0, growth = 0, h = 0, h_rank = 0, h_growth =0, h_growth_rank = 0)
-	new_game = Game.objects.create(bgg_id = game_id, name = game_name, game_pic = pic, year_published = year)
+	Game.objects.create(bgg_id = game_id, name = game_name, game_pic = pic, year_published = year)
 	
 	updateMonthlyPlays(game_id)
 	return

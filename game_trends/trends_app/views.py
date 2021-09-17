@@ -12,7 +12,7 @@ def delete_all(request):
 
 def index(request):
 
-	deleteErrorGames()
+	# deleteErrorGames()
 
 	sorted_by_plays = Game.objects.order_by('-plays')
 	sorted_by_growth = Game.objects.order_by('-growth')
