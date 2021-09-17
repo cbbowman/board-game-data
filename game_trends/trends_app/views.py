@@ -8,7 +8,7 @@ from django.db.models import F
 
 def delete_all(request):
 	Game.objects.all().delete()
-	redirect('/')
+	return redirect('/')
 
 def index(request):
 
