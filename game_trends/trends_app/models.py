@@ -36,13 +36,16 @@ def request(msg, slp=1):
     return r
 
 def checkTopGames():
+	for i in range(5):
+		checkTopGamesByPage(i)
+
 	numGames = Game.objects.all().count()
-	pages=range(1,100)
-	pageWeights=[]
-	for i in range(0,99):
-		pageWeights.append(100-i)
-	while Game.objects.all().count()<max_size*1.05:
-		checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=2)[0])
+	# pages=range(1,100)
+	# pageWeights=[]
+	# for i in range(0,99):
+	# 	pageWeights.append(100-i)
+	# while Game.objects.all().count()<max_size*1.05:
+	# 	checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=2)[0])
 
 	sorted_by_plays = Game.objects.order_by('-plays')
 	sorted_by_growth = Game.objects.order_by('-growth')
@@ -90,8 +93,8 @@ def checkTopGames():
 				continue
 			else:
 				low_ranked_games[i].delete()
-	return checkTopGames()
-	# return
+	# return checkTopGames()
+	return
 
 
 def checkTopGamesByPage(page):
