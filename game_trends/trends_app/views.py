@@ -191,7 +191,7 @@ def player_growth(request):
 	return render(request, 'growth.html', context)
 	
 def h(request):
-	games = Game.objects.filter(plays > 0)
+	games = Game.objects.all().filter(plays>0))
 	sorted_by_h = games.order_by('-h')
 
 
