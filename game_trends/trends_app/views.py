@@ -131,14 +131,34 @@ def user(request, user_id):
 	return render(request, 'profile.html', context)
 	
 def overall(request):
-	# sorted_by_plays = Game.objects.order_by('-plays')
 
-	# for rank in range(len(sorted_by_plays)):
-	# 	game =  sorted_by_plays[rank]
-	# 	game.play_rank = rank + 1
-	# 	game.save()
-	
-	overall_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('total_rank')
+	all_games = Game.objects.all().exclude(plays = 0)
+
+	sorted_by_plays = all_games.order_by('-plays')
+	for rank in range(len(sorted_by_plays)):
+		game =  sorted_by_plays[rank]
+		game.play_rank = rank + 1
+		game.save()
+
+	sorted_by_growth = all_games.order_by('-growth')
+	for rank in range(len(sorted_by_growth)):
+		game =  sorted_by_growth[rank]
+		game.growth_rank = rank + 1
+		game.save()
+		
+	sorted_by_h = all_games.order_by('-h')
+	for rank in range(len(sorted_by_h)):
+		game =  sorted_by_h[rank]
+		game.h_rank = rank + 1
+		game.save()
+
+	sorted_by_h_growth = all_games.order_by('-h_growth')
+	for rank in range(len(sorted_by_h_growth)):
+		game =  sorted_by_h_growth[rank]
+		game.h_growth_rank = rank + 1
+		game.save()
+
+	overall_games = all_games.annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('total_rank')
 
 	user_favs = {}
 	if request.user.is_authenticated:
@@ -193,7 +213,6 @@ def player_growth(request):
 def h(request):
 	all_games = Game.objects.all().exclude(plays = 0)
 	sorted_by_h = all_games.order_by('-h')
-
 
 	for rank in range(len(sorted_by_h)):
 		game =  sorted_by_h[rank]
