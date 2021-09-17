@@ -4,6 +4,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	{% load static %}
+	<link rel="shortcut icon" href="{% static 'favicon/favicon.png' %}"/>
 	<link rel="stylesheet" href="{% static 'css/style.css' %}">
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -52,7 +53,9 @@
 					<button type="submit" class="btn btn-primary">Add</button>
 				</div>
 			</form>
-			<div class="col-4"><a href="/delete_all" class="btn btn-danger">DELETE ALL</a></div>
+			<div class="col-4">
+				<a href="/delete_all" class="btn btn-danger">DELETE ALL</a>
+			</div>
 		</div>
 		{% endif %}
 		<div class="row">
