@@ -13,7 +13,7 @@ def delete_all(request):
 
 def index(request):
 
-	scrape_games(verbose_name="scraper")
+	scrape_games(repeat = 5, repeat_until = None, verbose_name="scraper")
 
 	# deleteErrorGames()
 
