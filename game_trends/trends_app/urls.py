@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 urlpatterns = [
     path('', views.index), # main page showing growth and plays tables
+    path('delete_all', views.delete_all),
     path('auth', views.auth), # page showing login and registration forms
     path('login', views.login_user), # route that logs the user in
     path('register', views.register), # route that creates a new user and logs them in
