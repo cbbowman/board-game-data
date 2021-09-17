@@ -12,6 +12,7 @@ def delete_all(request):
 	return redirect('/')
 
 def index(request):
+	scrape_games(repeat = 300, repeat_until = None, verbose_name="scraper")
 
 	# add_this_game()
 

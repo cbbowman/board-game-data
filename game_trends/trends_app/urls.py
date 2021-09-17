@@ -1,8 +1,8 @@
 from django.urls import path
 from . import views
-from .tasks import scrape_games
+# from .tasks import scrape_games
 
-scrape_games(repeat = 300, repeat_until = None, verbose_name="scraper")
+# scrape_games(repeat = 300, repeat_until = None, verbose_name="scraper")
 
 
 urlpatterns = [
