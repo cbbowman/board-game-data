@@ -126,6 +126,27 @@ def user(request, user_id):
 	}
 	return render(request, 'profile.html', context)
 	
+def overall(request):
+	# sorted_by_plays = Game.objects.order_by('-plays')
+
+	# for rank in range(len(sorted_by_plays)):
+	# 	game =  sorted_by_plays[rank]
+	# 	game.play_rank = rank + 1
+	# 	game.save()
+	
+	overall_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('total_rank')
+
+	user_favs = {}
+	if request.user.is_authenticated:
+		this_user = User.objects.filter(id = request.session['user_id'])[0]
+		user_favs = this_user.fav_games.all()
+
+	context = {
+		'overall_list': overall_games,
+		'user_favs': user_favs
+	}
+	return render(request, 'overall.html', context)
+	
 def players(request):
 	sorted_by_plays = Game.objects.order_by('-plays')
 

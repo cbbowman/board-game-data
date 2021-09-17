@@ -19,9 +19,9 @@
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			<div class="collapse navbar-collapse navbar-nav" id="navbarNav">
-				<a class="nav-item nav-link" href="/overall">Overall</a>
-				<a class="nav-item nav-link active" href="/players">Players</a>
-				<!-- <a class="nav-item nav-link active" href="/growth">Growing</a> -->
+				<a class="nav-item nav-link active" href="/overall">Overall</a>
+				<a class="nav-item nav-link" href="/players">Players</a>
+				<!-- <a class="nav-item nav-link" href="/growth">Growing</a> -->
 				<a class="nav-item nav-link" href="/h">H-Index</a>
 				{% if request.user.is_authenticated %}
 				<a class="nav-item nav-link" href="/user/{{request.user.id}}">My Games</a>
@@ -50,30 +50,35 @@
 		{% endif %}
 		<div class="row">
 			<div class="col">
-				<h2>Most Player Growth</h2>
+				<h2>Most Players</h2>
 				<table class="table">
 					<thead>
 						<tr>
-							<th>Rank</th>
+							<th>Total Rank</th>
 							<th></th>
 							<th>Game</th>
 							<th>Year</th>
-							<th><a href="/players">Monthly Players</a></th>
+							<th><a href="/plays">Monthly Players</a></th>
 							<th><a href="/growth">Players Growth</a></th>
+							<th><a href="/h">H-Index</a></th>
+							<th><a href="/h_growth">H-Index Growth</a></th>
 							{% if request.user.is_authenticated %}
 							<th>Favorite</th>
 							{% endif %}
 						</tr>
 					</thead>
 					<tbody>
-						{% for game in growth_list %}
+						{% for game in overall_list %}
 						<tr>
-							<td>{{game.growth_rank}}</td>
+							<!-- <td>{{game.play_rank + game.growth_rank +game.h_rank + game.h_growth_rank}}</td> -->
+							<td>{{game.total_rank}}</td>
 							<td><img class="thumbnail" src="{{game.game_pic}}" alt="{{game.name}}"></td>
 							<td><a href="https://boardgamegeek.com/boardgame/{{game.bgg_id}}">{{game.name}}</a></td>
 							<td>{{game.year_published}}</td>
 							<td>{{game.plays}}</td>
 							<td>{{game.growth}}%</td>
+							<td>{{game.h}}</td>
+							<td>{{game.h_growth}}%</td>
 							{% if request.user.is_authenticated %}
 							{% if game in user_favs %}
 							<td><form action="/unfav/{{game.id}}" method="POST" class="row">
