@@ -5,13 +5,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.sessions.models import Session
 from django.db.models import F
-from .tasks import scrape_games
+from .tasks import scrape_games, add_this_game
 
 def delete_all(request):
 	Game.objects.all().delete()
 	return redirect('/')
 
 def index(request):
+
+	add_this_game()
 
 	scrape_games(repeat = 5, repeat_until = None, verbose_name="scraper")
 
