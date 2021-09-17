@@ -13,7 +13,7 @@ from pathlib import PurePosixPath
 import os.path, time
 import random
 
-max_size = 50
+max_size = 500
 
 def deleteErrorGames():
 	zeros = Game.objects.filter(plays = 0)
@@ -36,17 +36,13 @@ def request(msg, slp=1):
     return r
 
 def checkTopGames():
-	for i in range(5):
-		checkTopGamesByPage(i)
-
 	numGames = Game.objects.all().count()
-
-	# while Game.objects.all().count()<max_size+1:
-	# 	pages=range(1,100)
-	# 	pageWeights=[]
-	# 	for i in range(0,99):
-	# 		pageWeights.append(100-i)
-	# 	checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=2)[0])
+	pages=range(1,100)
+	pageWeights=[]
+	for i in range(0,99):
+		pageWeights.append(100-i)
+	while Game.objects.all().count()<max_size*1.05:
+		checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=2)[0])
 
 	sorted_by_plays = Game.objects.order_by('-plays')
 	sorted_by_growth = Game.objects.order_by('-growth')
@@ -55,32 +51,48 @@ def checkTopGames():
 
 	for rank in range(len(sorted_by_plays)):
 		game =  sorted_by_plays[rank]
-		game.play_rank = rank +1
+		if game.plays == 0:
+			game.play_rank = rank +1
+		else:
+			game.play_rank = rank + 1
 		game.save()
 
 	for rank in range(len(sorted_by_growth)):
 		game =  sorted_by_growth[rank]
-		game.growth_rank = rank +1
+		if game.growth == 0:
+			game.growth_rank = rank +1
+		else:
+			game.growth_rank = rank + 1
 		game.save()
 
 	for rank in range(len(sorted_by_h)):
 		game =  sorted_by_h[rank]
-		game.h_rank = rank +1
+		if game.h == 0:
+			game.h_rank = rank +1
+		else:
+			game.h_rank = rank + 1
 		game.save()
 
 	for rank in range(len(sorted_by_h_growth)):
 		game =  sorted_by_h_growth[rank]
-		game.h_rank_growth = rank +1
+		if game.h_growth == 0:
+			game.h_growth_rank = rank +1
+		else:
+			game.h_growth_rank = rank + 1
 		game.save()
 	
 	low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('-total_rank')
+	if len(low_ranked_games)>max_size:
+		for i in range(len(low_ranked_games)-max_size):
+			# low_ranked_games[i].delete()
+			# pass
+			if len(low_ranked_games[i].fav_users.all())>0:
+				continue
+			else:
+				low_ranked_games[i].delete()
+	return checkTopGames()
+	# return
 
-	for i in range(len(low_ranked_games)-max_size):
-		if low_ranked_games[i].fav_users.all().count()>0:
-			continue
-		else:
-			low_ranked_games[i].delete()
-	return
 
 def checkTopGamesByPage(page):
 	url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
@@ -99,7 +111,9 @@ def checkTopGamesByPage(page):
 	for a in range(100):
 		url_list.append(links1[a]['href'])
 		url_list.append(links2[a]['href'])
-	addNewGame(url_list[random.randint(1,200)])
+	# addNewGame(url_list[random.randint(1,200)])
+	for url in url_list:
+		addNewGame(url)
 	return
 
 def addNewGame(url):
@@ -115,7 +129,8 @@ def addNewGame(url):
 	if(year > 2019):
 		return
 
-	new_game = Game.objects.create(bgg_id = game_id, name = game_name, game_pic = pic, year_published = year, plays = 0, play_rank = 0, growth_rank = 0, growth = 0)
+	# new_game = Game.objects.create(bgg_id = game_id, name = game_name, game_pic = pic, year_published = year, plays = 0, play_rank = 0, growth_rank = 0, growth = 0, h = 0, h_rank = 0, h_growth =0, h_growth_rank = 0)
+	new_game = Game.objects.create(bgg_id = game_id, name = game_name, game_pic = pic, year_published = year)
 	
 	updateMonthlyPlays(game_id)
 	return
@@ -130,7 +145,6 @@ def getIDfromURL(url):
 
 def checkForPlays(bgg_id):
 	url = "https://boardgamegeek.com///xmlapi2/plays?id="+str(bgg_id)
-	#time.sleep(1)
 	page = request(url)
 	soup = BeautifulSoup(page.content, 'lxml')
 	plays = int(soup.find('plays')['total'])
@@ -143,7 +157,6 @@ def getXMLURLfromGameID(gameid):
 	return url
 
 def getDataFromXML(url):
-	#time.sleep(1)
 	page = request(url)
 	soup = BeautifulSoup(page.content, 'lxml')
 	name = soup.find('name')
@@ -170,6 +183,8 @@ def updateMonthlyPlays(game_id):
 	this_game.growth = round(((this_game.plays/(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[13:24].aggregate((Avg('plays')))['plays__avg']))-1),2)*100
 
 	this_game.h = round(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[:12].aggregate((Avg('h')))['h__avg'],1)
+
+	this_game.h_growth = round(((this_game.h/(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[13:24].aggregate((Avg('h')))['h__avg']))-1),2)*100
 
 	this_game.save()
 
@@ -228,6 +243,8 @@ class Game(models.Model):
 	growth = models.SmallIntegerField(default=0)
 	h = models.FloatField(default=0)
 	h_rank = models.PositiveSmallIntegerField(default=0)
+	h_growth_rank = models.PositiveSmallIntegerField(default=0)
+	h_growth = models.SmallIntegerField(default=0)
 	fav_users = models.ManyToManyField(User, related_name='fav_games')
 	
 class MonthlyPlay(models.Model):
