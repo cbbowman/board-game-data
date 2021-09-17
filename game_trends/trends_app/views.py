@@ -145,7 +145,8 @@ def overall(request):
 		'overall_list': overall_games,
 		'user_favs': user_favs
 	}
-	return render(request, 'overall.html', context)
+	return redirect('/')
+	# return render(request, 'index.html', context)
 	
 def players(request):
 	sorted_by_plays = Game.objects.order_by('-plays')
