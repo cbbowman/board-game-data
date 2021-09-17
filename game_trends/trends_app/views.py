@@ -173,7 +173,8 @@ def overall(request):
 	return render(request, 'overall.html', context)
 	
 def players(request):
-	sorted_by_plays = Game.objects.order_by('-plays')
+	all_games = Game.objects.all().exclude(plays = 0)
+	sorted_by_plays = all_games.order_by('-plays')
 
 	for rank in range(len(sorted_by_plays)):
 		game =  sorted_by_plays[rank]
@@ -192,7 +193,8 @@ def players(request):
 	return render(request, 'plays.html', context)
 	
 def player_growth(request):
-	sorted_by_growth = Game.objects.order_by('-growth')
+	all_games = Game.objects.all().exclude(plays = 0)
+	sorted_by_growth = all_games.order_by('-growth')
 
 	for rank in range(len(sorted_by_growth)):
 		game =  sorted_by_growth[rank]
@@ -231,7 +233,8 @@ def h(request):
 	return render(request, 'h_index.html', context)
 	
 def h_growth(request):
-	sorted_by_h_growth = Game.objects.order_by('-h_growth')
+	all_games = Game.objects.all().exclude(plays = 0)
+	sorted_by_h_growth = all_games.order_by('-h_growth')
 
 	for rank in range(len(sorted_by_h_growth)):
 		game =  sorted_by_h_growth[rank]
