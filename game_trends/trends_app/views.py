@@ -134,7 +134,7 @@ def overall(request):
 	# 	game.play_rank = rank + 1
 	# 	game.save()
 	
-	overall_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('total_rank')
+	overall_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('total_rank')
 
 	user_favs = {}
 	if request.user.is_authenticated:
