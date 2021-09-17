@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.sessions.models import Session
 from django.db.models import F
-from .tasks import scrape_games, add_this_game
+from .tasks import scrape_games
 
 def delete_all(request):
 	Game.objects.all().delete()
