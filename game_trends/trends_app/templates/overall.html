@@ -70,9 +70,9 @@
 					<tbody>
 						{% for game in overall_list %}
 						<tr>
-							<td>1</td>
+							<!-- <td>1</td> -->
 							<!-- <td>{{game.play_rank + game.growth_rank +game.h_rank + game.h_growth_rank}}</td> -->
-							<!-- <td>{{game.total_rank}}</td> -->
+							<td>{{game.total_rank}}</td>
 							<td><img class="thumbnail" src="{{game.game_pic}}" alt="{{game.name}}"></td>
 							<td><a href="https://boardgamegeek.com/boardgame/{{game.bgg_id}}">{{game.name}}</a></td>
 							<td>{{game.year_published}}</td>
