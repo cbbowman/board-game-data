@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['18.224.66.3']
 # Application definition
 
 INSTALLED_APPS = [
+    'background_task',
     'trends_app',
     'django.contrib.admin',
     'django.contrib.auth',
