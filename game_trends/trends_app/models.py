@@ -37,7 +37,7 @@ def request(msg, slp=1):
 
 def checkTopGames():
 	deleteErrorGames()
-	for i in range(5):
+	for i in range(6):
 		checkTopGamesByPage(i)
 
 	numGames = Game.objects.all().count()
