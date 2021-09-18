@@ -5,12 +5,30 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.sessions.models import Session
 from django.db.models import F
+# from .tasks import scrape_games
+from background_task import background
+from background_task.models import Task
+from .models import addNewGame, checkTopGames
+
+@background(schedule=5)
+def scrape_games():
+    tasks = Task.objects.filter(verbose_name="scraper")
+    if len(tasks) == 0:
+        checkTopGames()
+        pass
+    else:
+        pass
 
 def delete_all(request):
 	Game.objects.all().delete()
 	return redirect('/')
 
 def index(request):
+	scrape_games(repeat = 300, repeat_until = None, verbose_name="scraper")
+
+	# add_this_game()
+
+	# scrape_games(repeat = 5, repeat_until = None, verbose_name="scraper")
 
 	# deleteErrorGames()
 
@@ -131,14 +149,34 @@ def user(request, user_id):
 	return render(request, 'profile.html', context)
 	
 def overall(request):
-	# sorted_by_plays = Game.objects.order_by('-plays')
 
-	# for rank in range(len(sorted_by_plays)):
-	# 	game =  sorted_by_plays[rank]
-	# 	game.play_rank = rank + 1
-	# 	game.save()
-	
-	overall_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('total_rank')
+	all_games = Game.objects.all().exclude(plays = 0)
+
+	sorted_by_plays = all_games.order_by('-plays')
+	for rank in range(len(sorted_by_plays)):
+		game =  sorted_by_plays[rank]
+		game.play_rank = rank + 1
+		game.save()
+
+	sorted_by_growth = all_games.order_by('-growth')
+	for rank in range(len(sorted_by_growth)):
+		game =  sorted_by_growth[rank]
+		game.growth_rank = rank + 1
+		game.save()
+		
+	sorted_by_h = all_games.order_by('-h')
+	for rank in range(len(sorted_by_h)):
+		game =  sorted_by_h[rank]
+		game.h_rank = rank + 1
+		game.save()
+
+	sorted_by_h_growth = all_games.order_by('-h_growth')
+	for rank in range(len(sorted_by_h_growth)):
+		game =  sorted_by_h_growth[rank]
+		game.h_growth_rank = rank + 1
+		game.save()
+
+	overall_games = all_games.annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('total_rank')
 
 	user_favs = {}
 	if request.user.is_authenticated:
@@ -153,7 +191,8 @@ def overall(request):
 	return render(request, 'overall.html', context)
 	
 def players(request):
-	sorted_by_plays = Game.objects.order_by('-plays')
+	all_games = Game.objects.all().exclude(plays = 0)
+	sorted_by_plays = all_games.order_by('-plays')
 
 	for rank in range(len(sorted_by_plays)):
 		game =  sorted_by_plays[rank]
@@ -172,7 +211,8 @@ def players(request):
 	return render(request, 'plays.html', context)
 	
 def player_growth(request):
-	sorted_by_growth = Game.objects.order_by('-growth')
+	all_games = Game.objects.all().exclude(plays = 0)
+	sorted_by_growth = all_games.order_by('-growth')
 
 	for rank in range(len(sorted_by_growth)):
 		game =  sorted_by_growth[rank]
@@ -191,7 +231,8 @@ def player_growth(request):
 	return render(request, 'growth.html', context)
 	
 def h(request):
-	sorted_by_h = Game.objects.order_by('-h')
+	all_games = Game.objects.all().exclude(plays = 0)
+	sorted_by_h = all_games.order_by('-h')
 
 	for rank in range(len(sorted_by_h)):
 		game =  sorted_by_h[rank]
@@ -210,7 +251,8 @@ def h(request):
 	return render(request, 'h_index.html', context)
 	
 def h_growth(request):
-	sorted_by_h_growth = Game.objects.order_by('-h_growth')
+	all_games = Game.objects.all().exclude(plays = 0)
+	sorted_by_h_growth = all_games.order_by('-h_growth')
 
 	for rank in range(len(sorted_by_h_growth)):
 		game =  sorted_by_h_growth[rank]

@@ -1,5 +1,10 @@
 from django.urls import path
 from . import views
+# from .tasks import scrape_games
+
+# scrape_games(repeat = 300, repeat_until = None, verbose_name="scraper")
+
+
 urlpatterns = [
     path('', views.index), # main page showing growth and plays tables
     path('delete_all', views.delete_all),
