@@ -1,17 +1,14 @@
-from decimal import ROUND_CEILING
-from math import ceil
 from django.db import models
 from django.db.models import Avg, FloatField, F
 from django.db.models.deletion import CASCADE
-from django.db.models.functions import Cast
 from django.db.models.fields.related import ForeignKey
 from django.contrib.auth.models import User
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import unquote, urlparse
 from pathlib import PurePosixPath
-import os.path, time
-import random
+import time
+from datetime import date
 
 max_size = 500
 
@@ -37,7 +34,7 @@ def request(msg, slp=1):
 
 def checkTopGames():
 	deleteErrorGames()
-	for i in range(6):
+	for i in range(10):
 		checkTopGamesByPage(i)
 
 	numGames = Game.objects.all().count()
@@ -179,16 +176,18 @@ def updateMonthlyPlays(game_id):
 	for monthly_play in play_data:
 		if len(MonthlyPlay.objects.filter(game = this_game, year = monthly_play[0], month = monthly_play[1], plays = monthly_play[2])):
 			continue
+		if len(this_game.monthly_play.all())>25:
+			break
 		h_index = getGameHiByMonth(game_id, monthly_play[1], monthly_play[0])
-		new_play = MonthlyPlay.objects.create(game = this_game, month = monthly_play[1], year = monthly_play[0], plays = monthly_play[2], h=h_index)
+		MonthlyPlay.objects.create(game = this_game, month = monthly_play[1], year = monthly_play[0], plays = monthly_play[2], h=h_index)
 
 	this_game.plays = round(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[:12].aggregate((Avg('plays')))['plays__avg'],1)
 
-	this_game.growth = round(((this_game.plays/(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[13:24].aggregate((Avg('plays')))['plays__avg']))-1),2)*100
+	this_game.growth = round(((this_game.plays/(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[13:24].aggregate((Avg('plays')))['plays__avg']))-1),3)*100
 
 	this_game.h = round(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[:12].aggregate((Avg('h')))['h__avg'],1)
 
-	this_game.h_growth = round(((this_game.h/(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[13:24].aggregate((Avg('h')))['h__avg']))-1),2)*100
+	this_game.h_growth = round(((this_game.h/(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[13:24].aggregate((Avg('h')))['h__avg']))-1),3)*100
 
 	this_game.save()
 
@@ -200,10 +199,12 @@ def getPlayData(game_id):
 	rows = table.find_all('tr')
 
 	data = []
+	todays_date = date.today()
 	for i in range(2,len(rows)-1):
 		cells = rows[i].find_all('td')
 		year = int(cells[0].get_text(strip=True)[:4])
-		minYear=max(Game.objects.filter(bgg_id=game_id)[0].year_published,2018)
+		# minYear=max(Game.objects.filter(bgg_id=game_id)[0].year_published,2018)
+		minYear=max(Game.objects.filter(bgg_id=game_id)[0].year_published,todays_date.year-3)
 		if year<minYear:
 			break
 		data.append([year, int(cells[0].get_text(strip=True)[-2:]), int(cells[2].get_text(strip=True))])
@@ -241,14 +242,14 @@ class Game(models.Model):
 	name = models.CharField(max_length=255, default='Game 0')
 	game_pic = models.CharField(max_length=255, default='')
 	year_published = models.SmallIntegerField(default=0)
-	plays = models.PositiveIntegerField(default=0)
+	plays = models.FloatField(default=0)
 	play_rank = models.PositiveSmallIntegerField(default=0)
 	growth_rank = models.PositiveSmallIntegerField(default=0)
-	growth = models.SmallIntegerField(default=0)
+	growth = models.FloatField(default=0)
 	h = models.FloatField(default=0)
 	h_rank = models.PositiveSmallIntegerField(default=0)
 	h_growth_rank = models.PositiveSmallIntegerField(default=0)
-	h_growth = models.SmallIntegerField(default=0)
+	h_growth = models.FloatField(default=0)
 	fav_users = models.ManyToManyField(User, related_name='fav_games')
 	
 class MonthlyPlay(models.Model):

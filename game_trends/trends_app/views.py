@@ -1,14 +1,15 @@
+from os import stat
 from django.shortcuts import redirect, render
 from .models import Game, addNewGame, checkTopGames, deleteErrorGames, getIDfromURL
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.sessions.models import Session
-from django.db.models import F
+from django.db.models import F, Func
 # from .tasks import scrape_games
 from background_task import background
-from background_task.models import Task
-from .models import addNewGame, checkTopGames
+# from background_task.models import Task
+from .models import addNewGame, checkTopGames, updateMonthlyPlays, FloatField
 
 @background(schedule=5)
 def scrape_games():
@@ -21,6 +22,14 @@ def scrape_games():
 
 def delete_all(request):
 	Game.objects.all().delete()
+	return redirect('/')
+
+def update(request):
+	all_games = Game.objects.all()
+
+	for game in all_games:
+		game.monthly_play.all().delete()
+		updateMonthlyPlays(game.bgg_id)
 	return redirect('/')
 
 def index(request):
@@ -176,9 +185,15 @@ def overall(request):
 		game.h_growth_rank = rank + 1
 		game.save()
 
+	# Ticket.objects.annotate(expires=ExpressionWrapper(F('active_at') + F('duration'), output_field=DateTimeField()))
+
+	# overall_games = all_games.annotate(total_rank=Func([F('play_rank'), F('growth_rank'), F('h_rank'), F('h_growth_rank')], function='statistics.harmonic_mean', output_field=FloatField())).order_by('total_rank')
+
 	overall_games = all_games.annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('total_rank')
 
+
 	user_favs = {}
+	
 	if request.user.is_authenticated:
 		this_user = User.objects.filter(id = request.session['user_id'])[0]
 		user_favs = this_user.fav_games.all()
