@@ -37,14 +37,6 @@ def checkTopGames():
 	for i in range(10):
 		checkTopGamesByPage(i)
 
-	numGames = Game.objects.all().count()
-	# pages=range(1,100)
-	# pageWeights=[]
-	# for i in range(0,99):
-	# 	pageWeights.append(100-i)
-	# while Game.objects.all().count()<max_size*1.05:
-	# 	checkTopGamesByPage(random.choices(pages,weights=pageWeights, k=2)[0])
-
 	sorted_by_plays = Game.objects.order_by('-plays')
 	sorted_by_growth = Game.objects.order_by('-growth')
 	sorted_by_h = Game.objects.order_by('-h')
@@ -85,15 +77,11 @@ def checkTopGames():
 	low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('-total_rank')
 	if len(low_ranked_games)>max_size:
 		for i in range(len(low_ranked_games)-max_size):
-			# low_ranked_games[i].delete()
-			# pass
 			if len(low_ranked_games[i].fav_users.all())>0:
 				continue
 			else:
 				low_ranked_games[i].delete()
-	# return checkTopGames()
 	return
-
 
 def checkTopGamesByPage(page):
 	url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
@@ -109,12 +97,14 @@ def checkTopGamesByPage(page):
 	links2 = table.find_all('a', {'class': 'primary'})
 
 	url_list = []
+
 	for a in range(100):
 		url_list.append(links1[a]['href'])
 		url_list.append(links2[a]['href'])
-	# addNewGame(url_list[random.randint(1,200)])
+
 	for url in url_list:
 		addNewGame(url)
+
 	return
 
 def addNewGame(url):
@@ -122,17 +112,17 @@ def addNewGame(url):
 
 	if(len(Game.objects.filter(bgg_id = game_id))):
 		return
+
 	if(not checkForPlays(game_id)):
 		return
+
 	xml_link = getXMLURLfromGameID(game_id)
 	game_name, year, pic = getDataFromXML(xml_link)
 
 	if(year > 2019):
 		return
 
-	# new_game = Game.objects.create(bgg_id = game_id, name = game_name, game_pic = pic, year_published = year, plays = 0, play_rank = 0, growth_rank = 0, growth = 0, h = 0, h_rank = 0, h_growth =0, h_growth_rank = 0)
 	Game.objects.create(bgg_id = game_id, name = game_name, game_pic = pic, year_published = year)
-	
 	updateMonthlyPlays(game_id)
 	return
 
@@ -169,7 +159,6 @@ def getDataFromXML(url):
 def updateMonthlyPlays(game_id):
 	if not len(Game.objects.filter(bgg_id=game_id)):
 		return
-	
 	this_game = Game.objects.filter(bgg_id=game_id)[0]
 	
 	play_data = getPlayData(game_id)
@@ -182,13 +171,9 @@ def updateMonthlyPlays(game_id):
 		MonthlyPlay.objects.create(game = this_game, month = monthly_play[1], year = monthly_play[0], plays = monthly_play[2], h=h_index)
 
 	this_game.plays = round(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[:12].aggregate((Avg('plays')))['plays__avg'],1)
-
 	this_game.growth = round(((this_game.plays/(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[13:24].aggregate((Avg('plays')))['plays__avg']))-1),3)*100
-
 	this_game.h = round(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[:12].aggregate((Avg('h')))['h__avg'],1)
-
 	this_game.h_growth = round(((this_game.h/(MonthlyPlay.objects.filter(game=this_game).order_by('-year','-month')[13:24].aggregate((Avg('h')))['h__avg']))-1),3)*100
-
 	this_game.save()
 
 def getPlayData(game_id):
@@ -203,7 +188,6 @@ def getPlayData(game_id):
 	for i in range(2,len(rows)-1):
 		cells = rows[i].find_all('td')
 		year = int(cells[0].get_text(strip=True)[:4])
-		# minYear=max(Game.objects.filter(bgg_id=game_id)[0].year_published,2018)
 		minYear=max(Game.objects.filter(bgg_id=game_id)[0].year_published,todays_date.year-3)
 		if year<minYear:
 			break

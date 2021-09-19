@@ -35,12 +35,6 @@ def update(request):
 def index(request):
 	scrape_games(repeat = 300, repeat_until = None, verbose_name="scraper")
 
-	# add_this_game()
-
-	# scrape_games(repeat = 5, repeat_until = None, verbose_name="scraper")
-
-	# deleteErrorGames()
-
 	sorted_by_plays = Game.objects.order_by('-plays')
 	sorted_by_growth = Game.objects.order_by('-growth')
 	sorted_by_h = Game.objects.order_by('-h')
@@ -48,47 +42,24 @@ def index(request):
 
 	for rank in range(len(sorted_by_plays)):
 		game =  sorted_by_plays[rank]
-		if game.plays == 0:
-			game.play_rank = rank +1
-			#game.play_rank = 0
-		else:
-			game.play_rank = rank + 1
+		game.play_rank = rank + 1
 		game.save()
 
 	for rank in range(len(sorted_by_growth)):
 		game =  sorted_by_growth[rank]
-		if game.growth == 0:
-			#game.growth_rank = 0
-			game.growth_rank = rank +1
-		else:
-			game.growth_rank = rank + 1
+		game.growth_rank = rank +1
 		game.save()
 
 	for rank in range(len(sorted_by_h)):
 		game =  sorted_by_h[rank]
-		if game.h == 0:
-			game.h_rank = rank +1
-			#game.h_rank = 0
-		else:
-			game.h_rank = rank + 1
+		game.h_rank = rank +1
 		game.save()
 
 	for rank in range(len(sorted_by_h_growth)):
 		game =  sorted_by_h_growth[rank]
-		if game.h_growth == 0:
-			game.h_growth_rank = rank +1
-		else:
-			game.h_growth_rank = rank + 1
+		game.h_growth_rank = rank +1
 		game.save()
 	
-	#low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')).order_by('-total_rank')
-
-	#for i in range(len(low_ranked_games)-100):
-	# 	if low_ranked_games[i].fav_users.all().count()>0:
-	# 		continue
-	# 	else:
-	# 		low_ranked_games[i].delete()
-
 	user_favs = {}
 	if request.user.is_authenticated:
 		this_user = User.objects.filter(id = request.session['user_id'])[0]
@@ -97,7 +68,6 @@ def index(request):
 	context = {
 		'play_list': sorted_by_plays[:10],
 		'h_list': sorted_by_h[:10],
-		# 'growth_list': sorted_by_growth[:10],
 		'user_favs': user_favs
 	}
 
@@ -185,12 +155,7 @@ def overall(request):
 		game.h_growth_rank = rank + 1
 		game.save()
 
-	# Ticket.objects.annotate(expires=ExpressionWrapper(F('active_at') + F('duration'), output_field=DateTimeField()))
-
-	# overall_games = all_games.annotate(total_rank=Func([F('play_rank'), F('growth_rank'), F('h_rank'), F('h_growth_rank')], function='statistics.harmonic_mean', output_field=FloatField())).order_by('total_rank')
-
 	overall_games = all_games.annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('total_rank')
-
 
 	user_favs = {}
 	
@@ -202,7 +167,6 @@ def overall(request):
 		'overall_list': overall_games,
 		'user_favs': user_favs
 	}
-	# return redirect('/') 
 	return render(request, 'overall.html', context)
 	
 def players(request):
