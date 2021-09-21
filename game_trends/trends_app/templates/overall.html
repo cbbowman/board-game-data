@@ -73,7 +73,7 @@
 						{% for game in overall_list %}
 						<tr>
 							<td>{{game.rank}}</td>
-							<td>{{game.score}}</td>
+							<td>{{game.score|floatformat:1}}</td>
 							<td><img class="thumbnail" src="{{game.game_pic}}" alt="{{game.name}}"></td>
 							<td><a href="https://boardgamegeek.com/boardgame/{{game.bgg_id}}">{{game.name}}</a></td>
 							<td>{{game.year_published}}</td>

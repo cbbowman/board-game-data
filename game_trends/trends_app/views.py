@@ -160,7 +160,7 @@ def overall(request):
 		game.score = statistics.harmonic_mean([game.play_rank, game.growth_rank, game.h_rank, game.h_growth_rank])
 		game.save()
 	
-	sorted_by_score = all_games.order_by('-score')
+	sorted_by_score = all_games.order_by('score')
 	for rank in range(len(sorted_by_score)):
 		game =  sorted_by_score[rank]
 		game.rank = rank + 1
