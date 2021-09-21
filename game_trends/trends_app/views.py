@@ -11,6 +11,8 @@ from background_task import background
 # from background_task.models import Task
 from .models import addNewGame, checkTopGames, updateMonthlyPlays, FloatField
 import statistics
+from datetime import date
+import math
 
 @background(schedule=5)
 def scrape_games():
@@ -156,8 +158,10 @@ def overall(request):
 		game.h_growth_rank = rank + 1
 		game.save()
 
+	todays_date = date.today()
 	for game in all_games:
-		game.score = statistics.harmonic_mean([game.play_rank, game.growth_rank, game.h_rank, game.h_growth_rank])
+		age = todays_date.year - game.year
+		game.score = statistics.harmonic_mean([game.play_rank, game.growth_rank, game.h_rank, game.h_growth_rank])/math.log(age,10)
 		game.save()
 	
 	sorted_by_score = all_games.order_by('score')
