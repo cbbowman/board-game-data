@@ -36,32 +36,10 @@ def update(request):
 	return redirect('/')
 
 def index(request):
-	scrape_games(repeat = 300, repeat_until = None, verbose_name="scraper")
+	# scrape_games(repeat = 300, repeat_until = None, verbose_name="scraper")
 
 	sorted_by_plays = Game.objects.order_by('-plays')
-	sorted_by_growth = Game.objects.order_by('-growth')
 	sorted_by_h = Game.objects.order_by('-h')
-	sorted_by_h_growth = Game.objects.order_by('-h_growth')
-
-	for rank in range(len(sorted_by_plays)):
-		game =  sorted_by_plays[rank]
-		game.play_rank = rank + 1
-		game.save()
-
-	for rank in range(len(sorted_by_growth)):
-		game =  sorted_by_growth[rank]
-		game.growth_rank = rank +1
-		game.save()
-
-	for rank in range(len(sorted_by_h)):
-		game =  sorted_by_h[rank]
-		game.h_rank = rank +1
-		game.save()
-
-	for rank in range(len(sorted_by_h_growth)):
-		game =  sorted_by_h_growth[rank]
-		game.h_growth_rank = rank +1
-		game.save()
 	
 	user_favs = {}
 	if request.user.is_authenticated:
@@ -112,18 +90,6 @@ def register(request):
 def user(request, user_id):
 	this_user = User.objects.filter(id = request.session['user_id'])[0]
 	fav_games = this_user.fav_games.order_by('name')
-	sorted_by_plays = fav_games.order_by('plays')
-	sorted_by_growth = fav_games.order_by('growth')
-
-	for rank in range(len(sorted_by_plays)):
-		game =  sorted_by_plays[rank]
-		game.play_rank = rank + 1
-		game.save()
-
-	for rank in range(len(sorted_by_growth)):
-		game =  sorted_by_growth[rank]
-		game.growth_rank = rank + 1
-		game.save()
 
 	context = {
 		'fav_games': fav_games
@@ -134,45 +100,7 @@ def overall(request):
 
 	all_games = Game.objects.all().exclude(plays = 0)
 
-	sorted_by_plays = all_games.order_by('-plays')
-	for rank in range(len(sorted_by_plays)):
-		game =  sorted_by_plays[rank]
-		game.play_rank = rank + 1
-		game.save()
-
-	sorted_by_growth = all_games.order_by('-growth')
-	for rank in range(len(sorted_by_growth)):
-		game =  sorted_by_growth[rank]
-		game.growth_rank = rank + 1
-		game.save()
-		
-	sorted_by_h = all_games.order_by('-h')
-	for rank in range(len(sorted_by_h)):
-		game =  sorted_by_h[rank]
-		game.h_rank = rank + 1
-		game.save()
-
-	sorted_by_h_growth = all_games.order_by('-h_growth')
-	for rank in range(len(sorted_by_h_growth)):
-		game =  sorted_by_h_growth[rank]
-		game.h_growth_rank = rank + 1
-		game.save()
-
-	todays_date = date.today()
-	for game in all_games:
-		age = todays_date.year - game.year_published
-		game.score = statistics.harmonic_mean([game.play_rank, game.growth_rank, game.h_rank, game.h_growth_rank])/math.log(age,10)
-		game.save()
-	
-	sorted_by_score = all_games.order_by('score')
-	for rank in range(len(sorted_by_score)):
-		game =  sorted_by_score[rank]
-		game.rank = rank + 1
-		game.save()
-
-	overall_games = sorted_by_score
-
-	# overall_games = all_games.annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('total_rank')
+	overall_games = all_games.order_by('score')
 
 	user_favs = {}
 	
@@ -190,11 +118,6 @@ def players(request):
 	all_games = Game.objects.all().exclude(plays = 0)
 	sorted_by_plays = all_games.order_by('-plays')
 
-	for rank in range(len(sorted_by_plays)):
-		game =  sorted_by_plays[rank]
-		game.play_rank = rank + 1
-		game.save()
-
 	user_favs = {}
 	if request.user.is_authenticated:
 		this_user = User.objects.filter(id = request.session['user_id'])[0]
@@ -209,11 +132,6 @@ def players(request):
 def player_growth(request):
 	all_games = Game.objects.all().exclude(plays = 0)
 	sorted_by_growth = all_games.order_by('-growth')
-
-	for rank in range(len(sorted_by_growth)):
-		game =  sorted_by_growth[rank]
-		game.growth_rank = rank + 1
-		game.save()
 
 	user_favs = {}
 	if request.user.is_authenticated:
@@ -230,11 +148,6 @@ def h(request):
 	all_games = Game.objects.all().exclude(plays = 0)
 	sorted_by_h = all_games.order_by('-h')
 
-	for rank in range(len(sorted_by_h)):
-		game =  sorted_by_h[rank]
-		game.h_rank = rank + 1
-		game.save()
-
 	user_favs = {}
 	if request.user.is_authenticated:
 		this_user = User.objects.filter(id = request.session['user_id'])[0]
@@ -249,11 +162,6 @@ def h(request):
 def h_growth(request):
 	all_games = Game.objects.all().exclude(plays = 0)
 	sorted_by_h_growth = all_games.order_by('-h_growth')
-
-	for rank in range(len(sorted_by_h_growth)):
-		game =  sorted_by_h_growth[rank]
-		game.h_growth_rank = rank + 1
-		game.save()
 
 	user_favs = {}
 	if request.user.is_authenticated:

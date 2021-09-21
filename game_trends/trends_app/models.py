@@ -9,6 +9,7 @@ from urllib.parse import unquote, urlparse
 from pathlib import PurePosixPath
 import time
 from datetime import date
+import statistics, math
 
 max_size = 500
 
@@ -34,53 +35,9 @@ def request(msg, slp=1):
 
 def checkTopGames():
 	deleteErrorGames()
+
 	for i in range(10):
 		checkTopGamesByPage(i)
-
-	sorted_by_plays = Game.objects.order_by('-plays')
-	sorted_by_growth = Game.objects.order_by('-growth')
-	sorted_by_h = Game.objects.order_by('-h')
-	sorted_by_h_growth = Game.objects.order_by('-h_growth')
-
-	for rank in range(len(sorted_by_plays)):
-		game =  sorted_by_plays[rank]
-		if game.plays == 0:
-			game.play_rank = rank +1
-		else:
-			game.play_rank = rank + 1
-		game.save()
-
-	for rank in range(len(sorted_by_growth)):
-		game =  sorted_by_growth[rank]
-		if game.growth == 0:
-			game.growth_rank = rank +1
-		else:
-			game.growth_rank = rank + 1
-		game.save()
-
-	for rank in range(len(sorted_by_h)):
-		game =  sorted_by_h[rank]
-		if game.h == 0:
-			game.h_rank = rank +1
-		else:
-			game.h_rank = rank + 1
-		game.save()
-
-	for rank in range(len(sorted_by_h_growth)):
-		game =  sorted_by_h_growth[rank]
-		if game.h_growth == 0:
-			game.h_growth_rank = rank +1
-		else:
-			game.h_growth_rank = rank + 1
-		game.save()
-	
-	low_ranked_games = Game.objects.all().annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('-total_rank')
-	if len(low_ranked_games)>max_size:
-		for i in range(len(low_ranked_games)-max_size):
-			if len(low_ranked_games[i].fav_users.all())>0:
-				continue
-			else:
-				low_ranked_games[i].delete()
 	return
 
 def checkTopGamesByPage(page):
@@ -104,6 +61,14 @@ def checkTopGamesByPage(page):
 
 	for url in url_list:
 		addNewGame(url)
+		
+	low_ranked_games = Game.objects.all().order_by('-score')
+	if len(low_ranked_games)>max_size:
+		for i in range(len(low_ranked_games)-max_size):
+			if len(low_ranked_games[i].fav_users.all())>0:
+				continue
+			else:
+				low_ranked_games[i].delete()
 
 	return
 
@@ -127,6 +92,45 @@ def addNewGame(url):
 
 	Game.objects.create(bgg_id = game_id, name = game_name, game_pic = pic, year_published = year)
 	updateMonthlyPlays(game_id)
+
+	all_games = Game.objects.all().exclude(plays = 0)
+
+	sorted_by_plays = all_games.order_by('-plays')
+	for rank in range(len(sorted_by_plays)):
+		game =  sorted_by_plays[rank]
+		game.play_rank = rank + 1
+		game.save()
+
+	sorted_by_growth = all_games.order_by('-growth')
+	for rank in range(len(sorted_by_growth)):
+		game =  sorted_by_growth[rank]
+		game.growth_rank = rank + 1
+		game.save()
+		
+	sorted_by_h = all_games.order_by('-h')
+	for rank in range(len(sorted_by_h)):
+		game =  sorted_by_h[rank]
+		game.h_rank = rank + 1
+		game.save()
+
+	sorted_by_h_growth = all_games.order_by('-h_growth')
+	for rank in range(len(sorted_by_h_growth)):
+		game =  sorted_by_h_growth[rank]
+		game.h_growth_rank = rank + 1
+		game.save()
+
+	todays_date = date.today()
+	for game in all_games:
+		age = todays_date.year - game.year_published
+		game.score = statistics.harmonic_mean([game.play_rank, game.growth_rank, game.h_rank, game.h_growth_rank])/math.log(age,10)
+		game.save()
+	
+	sorted_by_score = all_games.order_by('score')
+	for rank in range(len(sorted_by_score)):
+		game =  sorted_by_score[rank]
+		game.rank = rank + 1
+		game.save()
+
 	return
 
 def getIDfromURL(url):
