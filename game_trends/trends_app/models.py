@@ -117,9 +117,12 @@ def addNewGame(url):
 		return
 
 	xml_link = getXMLURLfromGameID(game_id)
-	game_name, year, pic = getDataFromXML(xml_link)
+	game_name, year, pic, collectible = getDataFromXML(xml_link)
 
 	if(year > 2019):
+		return
+
+	if collectible:
 		return
 
 	Game.objects.create(bgg_id = game_id, name = game_name, game_pic = pic, year_published = year)
@@ -154,7 +157,11 @@ def getDataFromXML(url):
 	title = name['value']
 	year = int(soup.find('yearpublished')['value'])
 	img = str(soup.find('thumbnail').text)
-	return title, year, img
+	if soup.find(id='1044', type="boardgamecategory")==None:
+		collectible = False
+	else:
+		collectible = True
+	return title, year, img, collectible
 
 def updateMonthlyPlays(game_id):
 	if not len(Game.objects.filter(bgg_id=game_id)):
