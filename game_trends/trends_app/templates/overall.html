@@ -55,7 +55,8 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<th>Total Rank</th>
+							<th>Rank</th>
+							<th>Score</th>
 							<th></th>
 							<th>Game</th>
 							<th>Year</th>
@@ -71,7 +72,8 @@
 					<tbody>
 						{% for game in overall_list %}
 						<tr>
-							<td>{{game.total_rank}}</td>
+							<td>{{game.rank}}</td>
+							<td>{{game.score}}</td>
 							<td><img class="thumbnail" src="{{game.game_pic}}" alt="{{game.name}}"></td>
 							<td><a href="https://boardgamegeek.com/boardgame/{{game.bgg_id}}">{{game.name}}</a></td>
 							<td>{{game.year_published}}</td>

@@ -10,6 +10,7 @@ from django.db.models import F, Func
 from background_task import background
 # from background_task.models import Task
 from .models import addNewGame, checkTopGames, updateMonthlyPlays, FloatField
+import statistics
 
 @background(schedule=5)
 def scrape_games():
@@ -155,7 +156,18 @@ def overall(request):
 		game.h_growth_rank = rank + 1
 		game.save()
 
-	overall_games = all_games.annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('total_rank')
+	for game in all_games:
+		game.score = statistics.harmonic_mean([game.play_rank, game.growth_rank, game.h_rank, game.h_growth_rank])
+	
+	sorted_by_score = all_games.order_by('-score')
+	for rank in range(len(sorted_by_score)):
+		game =  sorted_by_score[rank]
+		game.rank = rank + 1
+		game.save()
+
+	overall_games = sorted_by_score
+
+	# overall_games = all_games.annotate(total_rank=F('play_rank')+F('growth_rank')+F('h_rank')+F('h_growth_rank')).order_by('total_rank')
 
 	user_favs = {}
 	
