@@ -11,7 +11,7 @@ import time
 from datetime import date
 import statistics, math
 
-max_size = 500
+max_size = 1000
 
 def deleteErrorGames():
 	zeros = Game.objects.filter(plays = 0)
