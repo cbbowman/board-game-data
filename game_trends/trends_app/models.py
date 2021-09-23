@@ -36,7 +36,7 @@ def request(msg, slp=1):
 def checkTopGames():
 	deleteErrorGames()
 
-	for i in range(10):
+	for i in range(20):
 		checkTopGamesByPage(i)
 	return
 
