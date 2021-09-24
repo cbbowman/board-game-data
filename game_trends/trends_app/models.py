@@ -127,7 +127,7 @@ def addNewGame(url):
 		game.score = statistics.mean([game.growth, game.h_growth, ((game.h**2)/game.plays)*100])+math.log(age,10)
 		game.save()
 	
-	sorted_by_score = all_games.order_by('score')
+	sorted_by_score = all_games.order_by('-score')
 	for rank in range(len(sorted_by_score)):
 		game =  sorted_by_score[rank]
 		game.rank = rank + 1
