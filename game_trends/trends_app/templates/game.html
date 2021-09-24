@@ -51,8 +51,12 @@
 		{% endif %}
         <div class="jumbotron jumbotron-fluid">
             <div class="container">
-                <h1 class="display-4">{{game.name}} ({{game.year_published}})</h1>
-                <img class="img-fluid" src="{{game.game_pic}}" alt="{{game.name}}">
+                <div class="col-4">
+                    <h1 class="display-4">{{game.name}} ({{game.year_published}})</h1>
+                </div>
+                <div class="col-8">
+                    <img class="img-fluid" src="{{game.game_pic}}" alt="{{game.name}}">
+                </div>
             </div>
         </div>
 		<div class="row">
