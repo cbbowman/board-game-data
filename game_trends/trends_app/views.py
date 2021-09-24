@@ -96,6 +96,14 @@ def user(request, user_id):
 	}
 	return render(request, 'profile.html', context)
 	
+def game(request, game_id):
+	this_game = Game.objects.filter(id = request.session['game_id'])[0]
+
+	context = {
+		'game': this_game
+	}
+	return render(request, 'game.html', context)
+	
 def overall(request):
 
 	all_games = Game.objects.all().exclude(plays = 0)

@@ -9,6 +9,7 @@ urlpatterns = [
     path('login', views.login_user), # route that logs the user in
     path('register', views.register), # route that creates a new user and logs them in
     path('user/<int:user_id>', views.user), # page showing user's favorite games with stats
+    path('game/<int:game_id>', views.game), # page showing stats for a game
     path('overall', views.overall), # page showing table of best overall games
     path('players', views.players), # page showing table of games with most plays
     path('growth', views.player_growth), # page showing table of games with most play growth

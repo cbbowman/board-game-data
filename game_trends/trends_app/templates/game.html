@@ -1,0 +1,104 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	{% load static %}
+	<link rel="shortcut icon" type='image/png' href="{% static 'favicon.ico' %}"/>
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<title>Board Game Trends</title>
+</head>
+<body>
+	<div class="container-fluid">
+		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<a class="navbar-brand" href="/">Board Game Trends</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse navbar-nav" id="navbarNav">
+				<a class="nav-item nav-link" href="/overall">Overall</a>
+				<a class="nav-item nav-link" href="/players">Players</a>
+				<!-- <a class="nav-item nav-link" href="/growth">Growing</a> -->
+				<a class="nav-item nav-link" href="/h">H-Index</a>
+				{% if request.user.is_authenticated %}
+				<a class="nav-item nav-link" href="/user/{{request.user.id}}">My Games</a>
+				<a class="nav-item nav-link" href="/logout">Logout</a>
+				{% else %}
+				<a class="nav-item nav-link" href="/auth">Login</a>
+				<a class="nav-item nav-link" href="/auth">Register</a>
+				{% endif %}
+
+
+			</div>
+		</nav>
+		{% if request.user.is_authenticated %}
+		<div>
+			<form action="/add" method="POST" class="row">
+				{% csrf_token %}
+				<div class="form-group col-4">
+					<label for="url">BGG URL</label>
+					<input type="text" name="url">
+				</div>
+				<div class="col-2">
+					<button type="submit" class="btn btn-primary">Add</button>
+				</div>
+			</form>
+		</div>
+		{% endif %}
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <div class="col-6">
+                    <h1 class="display-4">{{game.name}} ({{game.year_published}})</h1>
+                </div>
+                <div class="col-6">
+                    <img class="img-fluid" src="{{game.game_pic}}" alt="{{game.name}}">
+                </div>
+            </div>
+        </div>
+		<div class="row">
+			<div class="col">
+				<table class="table">
+					<thead>
+						<tr>
+							<th></th>
+							<th>Value</th>
+							<th>Rank</th>
+						</tr>
+					</thead>
+					<tbody>
+                        <tr>
+                            <td>Overall Score</td>
+							<td>{{game.score|floatformat:1}}</td>
+							<td>{{game.rank}}</td>
+                        </tr>
+                        <tr>
+                            <td>Unique Players</td>
+							<td>{{game.plays|floatformat:1}}</td>
+							<td>{{game.play_rank}}</td>
+                        </tr>
+                        <tr>
+                            <td>Unique Players - Growth</td>
+							<td>{{game.growth|floatformat:1}}</td>
+							<td>{{game.growth_rank}}</td>
+                        </tr>
+                        <tr>
+                            <td>H Index</td>
+							<td>{{game.h|floatformat:1}}</td>
+							<td>{{game.h_rank}}</td>
+                        </tr>
+                        <tr>
+                            <td>H Index - Growth</td>
+							<td>{{game.h_growth|floatformat:1}}</td>
+							<td>{{game.h_growth_rank}}</td>
+                        </tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
