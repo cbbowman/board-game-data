@@ -108,7 +108,7 @@ def overall(request):
 
 	all_games = Game.objects.all().exclude(plays = 0)
 
-	overall_games = all_games.order_by('score')
+	overall_games = all_games.order_by('rank')
 
 	user_favs = {}
 	
