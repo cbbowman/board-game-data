@@ -122,7 +122,8 @@ def addNewGame(url):
 	todays_date = date.today()
 	for game in all_games:
 		age = todays_date.year - game.year_published
-		game.score = statistics.harmonic_mean([game.play_rank, game.growth_rank, game.h_rank, game.h_growth_rank])/math.log(age,10)
+		# game.score = statistics.harmonic_mean([game.play_rank, game.growth_rank, game.h_rank, game.h_growth_rank])/math.log(age,10)
+		game.score = statistics.harmonic_mean([game.play_rank, game.growth_rank, game.h_rank, game.h_growth_rank])-math.log(age,10)
 		game.save()
 	
 	sorted_by_score = all_games.order_by('score')
