@@ -7,21 +7,21 @@ from django.contrib import messages
 from django.contrib.sessions.models import Session
 from django.db.models import F, Func
 # from .tasks import scrape_games
-from background_task import background
+# from background_task import background
 # from background_task.models import Task
 from .models import addNewGame, checkTopGames, updateMonthlyPlays, FloatField
 import statistics
 from datetime import date
 import math
 
-@background(schedule=5)
-def scrape_games():
-    tasks = Task.objects.filter(verbose_name="scraper")
-    if len(tasks) == 0:
-        checkTopGames()
-        pass
-    else:
-        pass
+# @background(schedule=5)
+# def scrape_games():
+#     tasks = Task.objects.filter(verbose_name="scraper")
+#     if len(tasks) == 0:
+#         checkTopGames()
+#         pass
+#     else:
+#         pass
 
 def delete_all(request):
 	Game.objects.all().delete()

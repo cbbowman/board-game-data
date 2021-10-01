@@ -41,7 +41,7 @@ def checkTopGames():
 	return
 
 def checkTopGamesByPage(page):
-	url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=numvoters&sortdir=desc"
+	url1 = "https://www.boardgamegeek.com/browse/boardgame/page/"+str(page)+"?sort=nuvoters&sortdir=desc"
 	page = request(url1)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	table = soup.find('table')
@@ -208,7 +208,6 @@ def getPlayData(game_id):
 
 def getGameHiByMonth(game_id, month, year):
 	url = "https://boardgamegeek.com/playstats/thing/"+str(game_id)+"/"+str(year)+"-"+f"{month:02d}"
-	time.sleep(1)
 	page = request(url)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	table = soup.find('table')
@@ -256,3 +255,6 @@ class MonthlyPlay(models.Model):
 	month = models.PositiveSmallIntegerField()
 	plays = models.PositiveSmallIntegerField()
 	h = models.PositiveSmallIntegerField()
+
+if __name__ == "__main__":
+	print("Hello World")
